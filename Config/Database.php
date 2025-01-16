@@ -1,7 +1,7 @@
 <?php
 namespace Config;
 
-require  '../vendor/autoload.php'; // Composer autoloader
+require_once __DIR__ .  '/../vendor/autoload.php'; // Composer autoloader
 
 
 use PDO;
@@ -34,7 +34,7 @@ class Database {
         try {
             self::$conn = new PDO("mysql:host=" . self::$host . ";dbname=" . self::$db_name, self::$username, self::$password);
             self::$conn->exec("set names utf8");
-            echo "works";
+            // echo "works";
         } catch(PDOException $exception) {
             echo "Erreur de connexion: " . $exception->getMessage();
         }

@@ -2,7 +2,6 @@
 namespace App\Controllers;
 require_once '../../vendor/autoload.php';
 
-use App\Models\TeacherModel;
 use App\Models\Course;
 use App\Models\Tag;
 use App\Models\Category;
@@ -12,7 +11,6 @@ class TeacherController {
     protected $courseModel;
 
     public function __construct() {
-        $this->teacherModel = new TeacherModel();
         $this->courseModel = new Course();
     }
 
@@ -21,33 +19,44 @@ class TeacherController {
         include 'App/Views/teacher/courses/index.php';
     }
 
+    public function showCours() {
+        $course = $this->courseModel->getAllCourses();
+        // include 'App/Views/teacher/courses/show.php';
+        return $course;
+    }
+
     public function show($courseId) {
         $course = $this->courseModel->getCourseById($courseId);
-        include 'App/Views/teacher/courses/show.php';
+        // include 'App/Views/teacher/courses/show.php';
     }
+
 
     public function create() {
         include 'App/Views/teacher/courses/create.php';
     }
 
-    public function store($teacherId) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = [
-                'titre' => $_POST['titre'],
-                'description' => $_POST['description'],
-                'contenu' => $_POST['contenu'],
-                'type_contenu' => $_POST['type_contenu'],
-                'enseignant_id' => $teacherId,
-                'categorie_id' => $_POST['categorie_id'],
-                'niveau' => $_POST['niveau'],
-                'duree' => $_POST['duree'],
-                'prix' => $_POST['prix'],
-                'langue_id' => $_POST['langue_id'],
-                'statut_id' => $_POST['statut_id']
-            ];
-            $this->courseModel->createCourse($data);
-            header('Location: /teacher/courses/' . $teacherId);
-        }
+    public function store($data) {
+        $resulta=$this->courseModel->createCourse($data);
+
+        // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        //     // $data = [
+        //     //     'titre' => $_POST['titre'],
+        //     //     'description' => $_POST['description'],
+        //     //     'contenu' => $_POST['contenu'],
+        //     //     'type_contenu' => $_POST['type_contenu'],
+        //     //     'enseignant_id' => $teacherId,
+        //     //     'categorie_id' => $_POST['categorie_id'],
+        //     //     'niveau' => $_POST['niveau'],
+        //     //     'duree' => $_POST['duree'],
+        //     //     'prix' => $_POST['prix'],
+        //     //     'langue_id' => $_POST['langue_id'],
+        //     //     'statut_id' => $_POST['statut_id']
+        //     // ];
+        //     var_dump($data);
+        //     $resulta=$this->courseModel->createCourse($data);
+        //     // header('Location: /teacher/courses/' . $teacherId);
+        //     return $resulta;
+        // }
     }
 
     public function edit($courseId) {

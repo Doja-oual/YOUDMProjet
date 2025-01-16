@@ -2,7 +2,7 @@
 
 
 namespace App\Core;
-require_once __DIR__ .'/../vendor/autoload.php';
+require_once __DIR__ .'/../../vendor/autoload.php';
 use Config\Database;
 
 
@@ -11,24 +11,40 @@ class Model{
     private $table;
 
 
-    public static function show($table){
-        $coon=Database::getConnection();
+    public static function all($table){
+        $conn=Database::getConnection();
         $sql="SELECT * FROM $table";
-        $query->prepare($sql);
+        $query=$conn->prepare($sql);
         $query->execute();
-        return$query->fetchAll(\PDO::FETCH_ASSOC);
+        return  $result=$query->fetchAll(\PDO::FETCH_ASSOC);
+        var_dump($result);
     }
 
-  public static function add($table){
-    $conn=Database::getConnection();
-    $columns = implode(",",array_keys($data));
-    $values=":" . implode(", :",array_keys($data));
-    $sql="INSERT INTO $table($columns) VALUES ($values)";
-    $stmt=$conn->prepare($sql);
+    public static function find($table, $id){
+        $conn=Database::getConnection();
+        $sql="SELECT * FROM $table WHERE id= :id" ;
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo "Erreur SQL: " . $e->getMessage();
+            return null;
+        }    }
 
-    foreach($data as $key =>$value){
-      $stmt->binValue(":$key",$value);} return $stmt->execute();
-  }
+    public  static function add($table,$data) {
+        $conn=Database::getConnection();
+        echo "<br>";
+        $columns = implode(",",array_keys($data));
+        $values = ":" . implode(", :", array_keys($data));  
+        $sql = "INSERT INTO $table ($columns) VALUES ($values)";
+        $stmt = $conn->prepare($sql);
+    
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":$key", $value); }
+        return $stmt->execute();
+    }
 
   public static function update($table,$id,$data){
     $conn=Database::getConnection();

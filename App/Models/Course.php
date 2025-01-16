@@ -1,6 +1,10 @@
 <?php
 namespace App\Models;
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 use App\Core\Model;
+use Config\Database;
+
 class Course extends Model {
     protected $table = 'Cours';
     protected $fillable = [
@@ -10,7 +14,10 @@ class Course extends Model {
 
     protected $contentHandlers = [];
 
+
+
     public function __construct() {
+        $this->conn = Database::getConnection();
         $this->contentHandlers = [
             'texte' => function($contenu) {
                 return "<p>$contenu</p>";
@@ -25,23 +32,23 @@ class Course extends Model {
     }
 
     public function createCourse($data) {
-        return $this->create($data);
+        return parent::add($this->table,$data);
     }
 
     public function getAllCourses() {
-        return $this->all();
+        return parent::all($this->table);
     }
 
     public function getCourseById($id) {
-        return $this->find($id);
+        return parent::find($this->table,$id);
     }
 
     public function updateCourse($id, $data) {
-        return $this->update($id, $data);
+        return parent::update($id, $data);
     }
 
     public function deleteCourse($id) {
-        return $this->delete($id);
+        return parent:: delete($id);
     }
 
     public function handleContent($type_contenu, $contenu) {
