@@ -19,10 +19,8 @@ class UserModel {
     public static function addUser($data) {
         $conn = self::getConnection();
     
-        // Hacher le mot de passe avant de l'insérer
         $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
     
-        // Requête SQL pour insérer l'utilisateur
         $sql = "INSERT INTO users (username, email, password_hash, role, bio, profile_picture_url) 
                 VALUES (:username, :email, :password_hash, :role, :bio, :profile_picture_url)";
         
@@ -31,8 +29,8 @@ class UserModel {
         return $stmt->execute([
             'username' => $data['username'],
             'email' => $data['email'],
-            'password_hash' => $passwordHash, // Mot de passe hashé
-            'role' => $data['role'] ?? 'user', // Rôle par défaut : 'user'
+            'password_hash' => $passwordHash, 
+            'role' => $data['role'] ?? 'user',
             'bio' => $data['bio'] ?? null,
             'profile_picture_url' => $data['profile_picture_url'] ?? null
         ]);

@@ -1,14 +1,28 @@
 <?php
 namespace App\Models;
-
 use App\Core\Model;
-
 class Course extends Model {
     protected $table = 'Cours';
     protected $fillable = [
         'titre', 'description', 'contenu', 'type_contenu', 'enseignant_id', 
         'categorie_id', 'niveau', 'duree', 'prix', 'langue_id', 'statut_id'
     ];
+
+    protected $contentHandlers = [];
+
+    public function __construct() {
+        $this->contentHandlers = [
+            'texte' => function($contenu) {
+                return "<p>$contenu</p>";
+            },
+            'video' => function($contenu) {
+                return "<video controls><source src='$contenu' type='video/mp4'></video>";
+            },
+            'image' => function($contenu) {
+                return "<img src='$contenu' alt='Image du cours'>";
+            }
+        ];
+    }
 
     public function createCourse($data) {
         return $this->create($data);
@@ -31,27 +45,9 @@ class Course extends Model {
     }
 
     public function handleContent($type_contenu, $contenu) {
-        switch ($type_contenu) {
-            case 'texte':
-                return $this->displayText($contenu);
-            case 'video':
-                return $this->displayVideo($contenu);
-            case 'image':
-                return $this->displayImage($contenu);
-            default:
-                throw new \Exception("Type de contenu non supporté.");
+        if (!isset($this->contentHandlers[$type_contenu])) {
+            throw new \Exception("Type de contenu non supporte.");
         }
-    }
-
-    protected function displayText($contenu) {
-        return "<p>$contenu</p>";
-    }
-
-    protected function displayVideo($contenu) {
-        return "<video controls><source src='$contenu' type='video/mp4'></video>";
-    }
-
-    protected function displayImage($contenu) {
-        return "<img src='$contenu' alt='Image du cours'>";
+        return $this->contentHandlers[$type_contenu]($contenu);
     }
 }
