@@ -11,7 +11,8 @@ class Model{
     private $table;
 
 
-    public static function all($table){
+    public static function all($table):array 
+    {
         $conn=Database::getConnection();
         $sql="SELECT * FROM $table";
         $query=$conn->prepare($sql);

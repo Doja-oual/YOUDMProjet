@@ -1,3 +1,29 @@
+<?php
+require_once __DIR__ . '/../../../vendor/autoload.php';
+use App\Models\User;
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = htmlspecialchars($_POST['nom']);
+    $email = htmlspecialchars($_POST['email']);
+    $password = $_POST['mot_de_passe'];
+    $confirm_password = $_POST['Confirme_motPasse'];
+    $role=(int)$_POST['role'];
+
+    if ($password !== $confirm_password) {
+        echo "<div class='alert alert-danger'>Les mots de passe ne correspondent pas.</div>";
+    } elseif (User::emailExists($email)) {
+        echo "<div class='alert alert-danger'>Cet email est déjà utilisé.</div>";
+    } else {
+        if (User::register($username, $email, $password)) {
+            echo "<div class='alert alert-success'>Inscription réussie. <a href='login.php'>Connectez-vous</a></div>";
+        } else {
+            echo "<div class='alert alert-danger'>Une erreur s'est produite. Veuillez réessayer.</div>";
+        }
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,7 +45,7 @@
         <!-- Formulaire de Connexion -->
         <div id="login-form">
             <h2>Connexion</h2>
-            <form>
+            <form action="Auth-signin" method="post">
                 <!-- Champ Nom d'utilisateur -->
                 <div class="mb-3">
                     <label for="login-username" class="form-label">Nom d'utilisateur</label>
@@ -59,13 +85,13 @@
        <!-- Formulaire d'Inscription -->
 <div id="register-form" class="hidden">
     <h2>Inscription</h2>
-    <form>
+    <form action="Auth.php" method="POST">
         <!-- Champ Nom complet -->
         <div class="mb-3">
             <label for="register-fullname" class="form-label">Nom complet</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" id="register-fullname" placeholder="Entrez votre nom complet" required>
+                <input type="text" name="nom" class="form-control" id="register-fullname" placeholder="Entrez votre nom complet" required>
             </div>
         </div>
         <!-- Champ Email -->
@@ -73,7 +99,7 @@
             <label for="register-email" class="form-label">Email</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control" id="register-email" placeholder="Entrez votre email" required>
+                <input type="email" name="email" class="form-control" id="register-email" placeholder="Entrez votre email" required>
             </div>
         </div>
         <!-- Champ Mot de passe -->
@@ -81,7 +107,7 @@
             <label for="register-password" class="form-label">Mot de passe</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="register-password" placeholder="Créez un mot de passe" required>
+                <input type="password" name="mot_de_passe" class="form-control" id="register-password" placeholder="Créez un mot de passe" required>
             </div>
         </div>
         <!-- Champ Confirmation du mot de passe -->
@@ -89,18 +115,18 @@
             <label for="register-confirm-password" class="form-label">Confirmez le mot de passe</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirmez votre mot de passe" required>
+                <input type="password" name="Confirme_motPasse" class="form-control" id="register-confirm-password" placeholder="Confirmez votre mot de passe" required>
             </div>
         </div>
         <!-- Choix du rôle (boutons radio) -->
         <div class="mb-3">
             <label class="form-label">Choisissez votre rôle</label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="register-role" id="register-role-etudiant" value="étudiant" required>
+                <input class="form-check-input" name="role" name="1" type="radio" name="register-role" id="register-role-etudiant" value="étudiant" required>
                 <label class="form-check-label" for="register-role-etudiant">Étudiant</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="register-role" id="register-role-enseignant" value="enseignant" required>
+                <input class="form-check-input" name="role"  value="2"type="radio" name="register-role" id="register-role-enseignant" value="enseignant" required>
                 <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
             </div>
         </div>

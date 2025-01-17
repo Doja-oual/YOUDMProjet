@@ -3,14 +3,14 @@ namespace App\Models;
 
 use Config\Database;
 
-class UserModel {
+class User {
     private static function getConnection() {
         return Database::getConnection();
     }
     
     public static function getAllUsers() {
         $conn = self::getConnection();
-        $sql = "SELECT * FROM users";
+        $sql = "SELECT * FROM Utilisateur";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -21,8 +21,8 @@ class UserModel {
     
         $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
     
-        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id, date_inscription, photo_profil,bio,pays,langue_id,statut_id) 
-                VALUES (:nom, :email, :mot_de_passe, :role_id, :date_inscription, :photo_profil,:bio,:bio,:pays,:langue_id,:statut_id)";
+        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id) 
+                VALUES (:nom, :email, :mot_de_passe, :role_id)";
         
         $stmt = $conn->prepare($sql);
         
@@ -31,13 +31,7 @@ class UserModel {
             'email' => $data['email'],
             'mot_de_passe' => $mot_de_passe, 
             'role_id' => $data['role_id'] ?? 'user',
-            'date_inscription' => $data['date_inscription'] ,
-            'photo_profil' => $data['photo_profil'] ,
-            'bio' => $data['bio'] ,        
-                'pays' => $data['pays'] ,
-            'langue_id' => $data['langue_id'] ,
-            'statut_id' => $data['statut_id'] ,
-
+            
 
 
         ]);
@@ -90,18 +84,23 @@ class UserModel {
     }
 
     //  enregistrer un nouvel utilisateur
-    public static function register($username, $email, $password) {
+    public static function register($username, $email, $password, $role_id = 1) {
         $conn = self::getConnection();
-        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id, date_inscription, photo_profil,bio,pays,langue_id,statut_id) 
-                VALUES (:nom, :email, :mot_de_passe, :role_id, :date_inscription, :photo_profil,:bio,:bio,:pays,:langue_id,:statut_id)";
+        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id) 
+                VALUES (:nom, :email, :mot_de_passe, :role_id)";
         
-        $stmt = $conn->prepare($sql);
-        
-        return $stmt->execute([
-            'username' => $username,
-            'email' => $email,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT)
-        ]);
+        try {
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([
+                'nom' => $username,
+                'email' => $email,
+                'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT),
+                'role_id' => $role_id, // Utilisez $role_id ici
+            ]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de l'enregistrement de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
     }
 
     //  pour verifie deja mmeme email
@@ -119,19 +118,16 @@ class UserModel {
     public static function login($email, $password) {
         $conn = self::getConnection();
     
-        // Récupérer l'utilisateur par email
         $sql = "SELECT * FROM Utilisateur WHERE email = :email";
         $stmt = $conn->prepare($sql);
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
     
-        // Vérifier le mot de passe
         if ($user && password_verify($password, $user['mot_de_passe'])) {
-            // Retourner les informations de l'utilisateur (sans le mot de passe)
             unset($user['mot_de_passe']);
             return $user;
         }
     
-        return false; // Échec de la connexion
+        return false; 
     }
 }

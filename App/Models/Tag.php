@@ -12,7 +12,7 @@ class Tag extends Model {
     }
 
    
-    public function showTag() {
+    public function showTag():array {
         return parent::show($this->table);
     }
 
