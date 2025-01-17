@@ -34,9 +34,9 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
             header('location : ../admin/dachboard.php ');
         }
         elseif  ($user['role']== 'Enseignant') {
-            header('location : ../teacher/dachboard.php ');
+            header('location : ../teacher/teacher.php ');
         } elseif($user['role']== 'Étudiant'){
-            header('location : ../teacher/dachboard.php ');
+            header('location : ../student/student.php ');
 
         }else{
 
