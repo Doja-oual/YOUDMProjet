@@ -1,3 +1,22 @@
+
+
+
+<?php
+// teacher.php
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user'])) {
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+    header('Location: ../../views/auth/login.php');
+    exit();
+}
+
+// Récupérer les informations de l'utilisateur
+$user = $_SESSION['user'];
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,8 +39,8 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
                 </div>
-                <button class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                <button class="btn btn-logout" >
+                <i class="fas fa-sign-out-alt"></i><a  href="../front/logout.php">Déconnexion</a>
                 </button>
             </div>
         </div>

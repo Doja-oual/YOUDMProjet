@@ -1,3 +1,20 @@
+<?php
+// teacher.php
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user'])) {
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+    header('Location: ../../views/auth/login.php');
+    exit();
+}
+
+// Récupérer les informations de l'utilisateur
+$user = $_SESSION['user'];
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -35,7 +52,7 @@
                             <a class="nav-link" href="#">Profil</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-light" href="#">Déconnexion</a>
+                            <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>
                         </li>
                     </ul>
                 </div>
