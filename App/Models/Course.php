@@ -86,4 +86,16 @@ class Course extends Model {
         foreach($tagId as $tagsId)
         $stmt->execute(['cours_id'=>CoursId,'tag_id'=>$tagId]);
     }
+
+    // Recupere tags d'un cours
+    public static function getTagForCours($CourId){
+        $conn=self::getConnection();
+        $sql="SELECT * FROM Tag 
+        JOIN CoursTag ON Tag.id=CoursTag.tag_id
+        WHERE CoursTag.cours_id=:cours_id";
+        $stmt=$conn->prepare($sql);
+        $stmt->execute(['cours_id'=>$CourId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+    }
 }
