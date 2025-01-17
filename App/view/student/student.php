@@ -9,7 +9,7 @@
     <!-- Lien vers Font Awesome pour les icônes -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Lien vers le fichier CSS personnalisé -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../../../public/assets/css/css.css">
 </head>
 <body>
     <!-- En-tête -->
