@@ -44,11 +44,11 @@ class Course extends Model {
     }
 
     public function updateCourse($id, $data) {
-        return parent::update($id, $data);
+        return parent::update($this->id, $data);
     }
 
     public function deleteCourse($id) {
-        return parent:: delete($id);
+        return parent:: delete($this->$id);
     }
 
     public function handleContent($type_contenu, $contenu) {

@@ -56,15 +56,15 @@
 
         <!-- Formulaire d'Inscription -->
        <!-- Formulaire d'Inscription -->
-<div id="register-form" class="hidden">
+       <div id="register-form" class="hidden">
     <h2>Inscription</h2>
-    <form>
+    <form action="votre_script_php.php" method="POST" enctype="multipart/form-data">
         <!-- Champ Nom complet -->
         <div class="mb-3">
             <label for="register-fullname" class="form-label">Nom complet</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" id="register-fullname" placeholder="Entrez votre nom complet" required>
+                <input type="text" class="form-control" id="register-fullname" name="nom" placeholder="Entrez votre nom complet" required>
             </div>
         </div>
 
@@ -73,7 +73,7 @@
             <label for="register-email" class="form-label">Email</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control" id="register-email" placeholder="Entrez votre email" required>
+                <input type="email" class="form-control" id="register-email" name="email" placeholder="Entrez votre email" required>
             </div>
         </div>
 
@@ -82,7 +82,7 @@
             <label for="register-password" class="form-label">Mot de passe</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="register-password" placeholder="Créez un mot de passe" required>
+                <input type="password" class="form-control" id="register-password" name="mot_de_passe" placeholder="Créez un mot de passe" required>
             </div>
         </div>
 
@@ -91,7 +91,7 @@
             <label for="register-confirm-password" class="form-label">Confirmez le mot de passe</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirmez votre mot de passe" required>
+                <input type="password" class="form-control" id="register-confirm-password" name="confirm_mot_de_passe" placeholder="Confirmez votre mot de passe" required>
             </div>
         </div>
 
@@ -99,13 +99,63 @@
         <div class="mb-3">
             <label class="form-label">Choisissez votre rôle</label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="register-role" id="register-role-etudiant" value="étudiant" required>
+                <input class="form-check-input" type="radio" name="role_id" id="register-role-etudiant" value="1" required>
                 <label class="form-check-label" for="register-role-etudiant">Étudiant</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="register-role" id="register-role-enseignant" value="enseignant" required>
+                <input class="form-check-input" type="radio" name="role_id" id="register-role-enseignant" value="2" required>
                 <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
             </div>
+        </div>
+<div class="part2">
+        <!-- Champ Photo de profil -->
+        <div class="mb-3">
+            <label for="register-photo" class="form-label">Photo de profil</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                <input type="file" class="form-control" id="register-photo" name="photo_profil" accept="image/*">
+            </div>
+        </div>
+
+        <!-- Champ Bio -->
+        <div class="mb-3">
+            <label for="register-bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="register-bio" name="bio" rows="3" placeholder="Parlez-nous un peu de vous"></textarea>
+        </div>
+
+        <!-- Champ Pays -->
+        <div class="mb-3">
+            <label for="register-pays" class="form-label">Pays</label>
+            <select class="form-select" id="register-pays" name="pays" required>
+                <option value="">Sélectionnez votre pays</option>
+                <option value="France">France</option>
+                <option value="Canada">Canada</option>
+                <option value="Belgique">Belgique</option>
+                <!-- Ajoutez d'autres pays ici -->
+            </select>
+        </div>
+
+        <!-- Champ Langue -->
+        <div class="mb-3">
+            <label for="register-langue" class="form-label">Langue</label>
+            <select class="form-select" id="register-langue" name="langue_id" required>
+                <option value="">Sélectionnez votre langue</option>
+                <option value="1">Français</option>
+                <option value="2">Anglais</option>
+                <option value="3">Espagnol</option>
+                <!-- Ajoutez d'autres langues ici -->
+            </select>
+        </div>
+
+        <!-- Champ Statut -->
+        <div class="mb-3">
+            <label for="register-statut" class="form-label">Statut</label>
+            <select class="form-select" id="register-statut" name="statut_id" required>
+                <option value="">Sélectionnez votre statut</option>
+                <option value="1">Actif</option>
+                <option value="2">Inactif</option>
+                <!-- Ajoutez d'autres statuts ici -->
+            </select>
         </div>
 
         <!-- Bouton d'inscription -->
