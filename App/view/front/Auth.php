@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\User;
 
@@ -20,6 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo "<div class='alert alert-danger'>Une erreur s'est produite. Veuillez réessayer.</div>";
         }
+    }
+}
+if($_SERVER['REQUEST_METHOD']=== 'POST'){
+    $email=htmlspecialchars($_POST['email']);
+    $password=$_POST['mot_de_passe'];
+    $user=User::login($email,$password);
+
+    if($user){
+        $_SESSION['user']=$user;
+        if($user['role']== 'Administrateur'){
+            header('location : ../admin/dachboard.php ');
+        }
+        elseif  ($user['role']== 'Enseignant') {
+            header('location : ../teacher/dachboard.php ');
+        } elseif($user['role']== 'Étudiant'){
+            header('location : ../teacher/dachboard.php ');
+
+        }else{
+
+            header('Location: index.php');
+
+        
+            
+        }
+        
     }
 }
 
