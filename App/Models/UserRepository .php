@@ -4,7 +4,7 @@ namespace App\Models;
 use Config\Database;
 use PDOException;
 
-class User {
+class UserRepository  {
     // Constantes pour les rôles
     const ROLE_ETUDIANT = 1;
     const ROLE_ENSEIGNANT = 2;
