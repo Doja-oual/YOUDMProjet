@@ -6,6 +6,9 @@ use App\Core\Model;
 use Config\Database;
 
 class Course extends Model {
+    public static function getConnection(){
+        return  Database::getConnection();
+    }
     protected $table = 'Cours';
     protected $fillable = [
         'titre', 'description', 'contenu', 'type_contenu', 'enseignant_id', 
@@ -36,7 +39,24 @@ class Course extends Model {
     }
 
     public function getAllCourses() {
-        return parent::all($this->table);
+        $conn=self::getConnection();
+        $sql="
+        SELECT Cours.*,
+        Categorie.nom as category.nom,
+        GROUP_CONTACT(Tag.nom SEPARATOR  ',') AS tags
+        FROM Cours
+        LEFT JOIN 
+        Categorie ON Cours.categorie_id = Categorie.id
+        LEFT JOIN 
+        CoursTag ON Cours.id=CoursTag.cours_id
+        LEFT JOIN 
+        *
+        Tag ON CoursTag.tag_id=Tag.id
+        GROUP BY
+        Cours.id";
+        $stmt=$conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function getCourseById($id) {
@@ -56,5 +76,14 @@ class Course extends Model {
             throw new \Exception("Type de contenu non supporte.");
         }
         return $this->contentHandlers[$type_contenu]($contenu);
+    }
+
+//Ajoute les tags a course
+    public static function addTagToCours($CoursId,$tagId){
+        $conn=self::getConnection();
+        $sql="INSERT INTO CoursTag (cours_id,tag_id) VALUES (:cours_id,:tag_id)";
+        $stmt=$conn->prepare($sql);
+        foreach($tagId as $tagsId)
+        $stmt->execute(['cours_id'=>CoursId,'tag_id'=>$tagId]);
     }
 }

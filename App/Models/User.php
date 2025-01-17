@@ -89,49 +89,49 @@ class UserModel {
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-//     //  enregistrer un nouvel utilisateur
-//     public static function register($username, $email, $password) {
-//         $conn = self::getConnection();
-//         $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id, date_inscription, photo_profil,bio,pays,langue_id,statut_id) 
-//                 VALUES (:nom, :email, :mot_de_passe, :role_id, :date_inscription, :photo_profil,:bio,:bio,:pays,:langue_id,:statut_id)";
+    //  enregistrer un nouvel utilisateur
+    public static function register($username, $email, $password) {
+        $conn = self::getConnection();
+        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id, date_inscription, photo_profil,bio,pays,langue_id,statut_id) 
+                VALUES (:nom, :email, :mot_de_passe, :role_id, :date_inscription, :photo_profil,:bio,:bio,:pays,:langue_id,:statut_id)";
         
-//         $stmt = $conn->prepare($sql);
+        $stmt = $conn->prepare($sql);
         
-//         return $stmt->execute([
-//             'username' => $username,
-//             'email' => $email,
-//             'password_hash' => password_hash($password, PASSWORD_DEFAULT)
-//         ]);
-//     }
+        return $stmt->execute([
+            'username' => $username,
+            'email' => $email,
+            'password_hash' => password_hash($password, PASSWORD_DEFAULT)
+        ]);
+    }
 
-//     //  pour verifie deja mmeme email
-//     public static function emailExists($email) {
-//         $conn = self::getConnection();
-//         $sql = "SELECT id FROM Utilisateur WHERE email = :email";
-//         $stmt = $conn->prepare($sql);
-//         $stmt->execute(['email' => $email]);
-//         return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
-//     }
+    //  pour verifie deja mmeme email
+    public static function emailExists($email) {
+        $conn = self::getConnection();
+        $sql = "SELECT id FROM Utilisateur WHERE email = :email";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
+    }
 
 
   
 
-//     public static function login($email, $password) {
-//         $conn = self::getConnection();
+    public static function login($email, $password) {
+        $conn = self::getConnection();
     
-//         // Récupérer l'utilisateur par email
-//         $sql = "SELECT * FROM Utilisateur WHERE email = :email";
-//         $stmt = $conn->prepare($sql);
-//         $stmt->execute(['email' => $email]);
-//         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        // Récupérer l'utilisateur par email
+        $sql = "SELECT * FROM Utilisateur WHERE email = :email";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
     
-//         // Vérifier le mot de passe
-//         if ($user && password_verify($password, $user['mot_de_passe'])) {
-//             // Retourner les informations de l'utilisateur (sans le mot de passe)
-//             unset($user['mot_de_passe']);
-//             return $user;
-//         }
+        // Vérifier le mot de passe
+        if ($user && password_verify($password, $user['mot_de_passe'])) {
+            // Retourner les informations de l'utilisateur (sans le mot de passe)
+            unset($user['mot_de_passe']);
+            return $user;
+        }
     
-//         return false; // Échec de la connexion
-//     }
- }
+        return false; // Échec de la connexion
+    }
+}
