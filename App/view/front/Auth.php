@@ -3,53 +3,59 @@ session_start();
 require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\User;
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = htmlspecialchars($_POST['nom']);
-    $email = htmlspecialchars($_POST['email']);
-    $password = $_POST['mot_de_passe'];
-    $confirm_password = $_POST['Confirme_motPasse'];
-    $role=(int)$_POST['role'];
+    if (isset($_POST['login'])) {
+        // Traitement de la connexion
+        $email = htmlspecialchars($_POST['email']);
+        $password = $_POST['mot_de_passe'];
+        $user = User::login($email, $password); 
 
-    if ($password !== $confirm_password) {
-        echo "<div class='alert alert-danger'>Les mots de passe ne correspondent pas.</div>";
-    } elseif (User::emailExists($email)) {
-        echo "<div class='alert alert-danger'>Cet email est déjà utilisé.</div>";
-    } else {
-        if (User::register($username, $email, $password)) {
-            echo "<div class='alert alert-success'>Inscription réussie. <a href='login.php'>Connectez-vous</a></div>";
+        if ($user) {
+            // Stocker les informations de l'utilisateur dans la session
+            $_SESSION['user'] = $user;
+
+            // Rediriger en fonction du rôle
+            switch ($user['role_id']) {
+                case User::ROLE_ADMIN: 
+                    header('Location: ../admin/dashboard.php');
+                    break;
+                case User::ROLE_ENSEIGNANT: 
+                    header('Location: ../teacher/teacher.php');
+                    break;
+                case User::ROLE_ETUDIANT: 
+                    header('Location: ../student/student.php');
+                    break;
+                default: 
+                    header('Location: index.php');
+                    break;
+            }
+            exit(); 
         } else {
-            echo "<div class='alert alert-danger'>Une erreur s'est produite. Veuillez réessayer.</div>";
+            $login_error = "Email ou mot de passe incorrect.";
+        }
+    } elseif (isset($_POST['register'])) {
+        // Traitement de l'inscription
+        $username = htmlspecialchars($_POST['nom']);
+        $email = htmlspecialchars($_POST['email']);
+        $password = $_POST['mot_de_passe'];
+        $confirm_password = $_POST['Confirme_motPasse'];
+        $role = (int)$_POST['role'];
+
+        if ($password !== $confirm_password) {
+            $register_error = "Les mots de passe ne correspondent pas.";
+        } elseif (User::emailExists($email)) {
+            $register_error = "Cet email est déjà utilisé.";
+        } else {
+            if (User::register($username, $email, $password, $role)) {
+                $register_success = "Inscription réussie. <a href='login.php'>Connectez-vous</a>";
+            } else {
+                $register_error = "Une erreur s'est produite. Veuillez réessayer.";
+            }
         }
     }
 }
-if($_SERVER['REQUEST_METHOD']=== 'POST'){
-    $email=htmlspecialchars($_POST['email']);
-    $password=$_POST['mot_de_passe'];
-    $user=User::login($email,$password);
-
-    if($user){
-        $_SESSION['user']=$user;
-        if($user['role']== 'Administrateur'){
-            header('location : ../admin/dachboard.php ');
-        }
-        elseif  ($user['role']== 'Enseignant') {
-            header('location : ../teacher/teacher.php ');
-        } elseif($user['role']== 'Étudiant'){
-            header('location : ../student/student.php ');
-
-        }else{
-
-            header('Location: index.php');
-
-        
-            
-        }
-        
-    }
-}
-
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -62,22 +68,22 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Styles personnalisés -->
     <link href="../../../public/assets/css/styles.css" rel="stylesheet">
-
-
-    
 </head>
 <body>
     <div class="form-container">
         <!-- Formulaire de Connexion -->
         <div id="login-form">
             <h2>Connexion</h2>
-            <form action="Auth-signin" method="post">
-                <!-- Champ Nom d'utilisateur -->
+            <?php if (isset($login_error)): ?>
+                <div class="alert alert-danger"><?php echo $login_error; ?></div>
+            <?php endif; ?>
+            <form action="Auth.php" method="post">
+                <!-- Champ Email -->
                 <div class="mb-3">
-                    <label for="login-username" class="form-label">Nom d'utilisateur</label>
+                    <label for="login-email" class="form-label">Email</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="login-username" placeholder="Entrez votre nom d'utilisateur" required>
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control" id="login-email" placeholder="Entrez votre email" required>
                     </div>
                 </div>
 
@@ -86,7 +92,7 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
                     <label for="login-password" class="form-label">Mot de passe</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="login-password" placeholder="Entrez votre mot de passe" required>
+                        <input type="password" name="mot_de_passe" class="form-control" id="login-password" placeholder="Entrez votre mot de passe" required>
                     </div>
                 </div>
 
@@ -97,7 +103,7 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
                 </div>
 
                 <!-- Bouton de connexion -->
-                <button type="submit" class="btn btn-primary">Connexion</button>
+                <button type="submit" name="login" class="btn btn-primary">Connexion</button>
 
                 <!-- Lien pour basculer vers le formulaire d'inscription -->
                 <div class="text-center mt-3">
@@ -107,64 +113,67 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
         </div>
 
         <!-- Formulaire d'Inscription -->
-       <!-- Formulaire d'Inscription -->
-       <!-- Formulaire d'Inscription -->
-<div id="register-form" class="hidden">
-    <h2>Inscription</h2>
-    <form action="Auth.php" method="POST">
-        <!-- Champ Nom complet -->
-        <div class="mb-3">
-            <label for="register-fullname" class="form-label">Nom complet</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="nom" class="form-control" id="register-fullname" placeholder="Entrez votre nom complet" required>
-            </div>
+        <div id="register-form" class="hidden">
+            <h2>Inscription</h2>
+            <?php if (isset($register_error)): ?>
+                <div class="alert alert-danger"><?php echo $register_error; ?></div>
+            <?php endif; ?>
+            <?php if (isset($register_success)): ?>
+                <div class="alert alert-success"><?php echo $register_success; ?></div>
+            <?php endif; ?>
+            <form action="Auth.php" method="POST">
+                <!-- Champ Nom complet -->
+                <div class="mb-3">
+                    <label for="register-fullname" class="form-label">Nom complet</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" name="nom" class="form-control" id="register-fullname" placeholder="Entrez votre nom complet" required>
+                    </div>
+                </div>
+                <!-- Champ Email -->
+                <div class="mb-3">
+                    <label for="register-email" class="form-label">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control" id="register-email" placeholder="Entrez votre email" required>
+                    </div>
+                </div>
+                <!-- Champ Mot de passe -->
+                <div class="mb-3">
+                    <label for="register-password" class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" name="mot_de_passe" class="form-control" id="register-password" placeholder="Créez un mot de passe" required>
+                    </div>
+                </div>
+                <!-- Champ Confirmation du mot de passe -->
+                <div class="mb-3">
+                    <label for="register-confirm-password" class="form-label">Confirmez le mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" name="Confirme_motPasse" class="form-control" id="register-confirm-password" placeholder="Confirmez votre mot de passe" required>
+                    </div>
+                </div>
+                <!-- Choix du rôle (boutons radio) -->
+                <div class="mb-3">
+                    <label class="form-label">Choisissez votre rôle</label>
+                    <div class="form-check">
+                        <input class="form-check-input" name="role" type="radio" id="register-role-etudiant" value="<?= User::ROLE_ETUDIANT ?>" required>
+                        <label class="form-check-label" for="register-role-etudiant">Étudiant</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" name="role" type="radio" id="register-role-enseignant" value="<?= User::ROLE_ENSEIGNANT ?>" required>
+                        <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
+                    </div>
+                </div>
+                <!-- Bouton d'inscription -->
+                <button type="submit" name="register" class="btn btn-primary">S'inscrire</button>
+                <!-- Lien pour basculer vers le formulaire de connexion -->
+                <div class="text-center mt-3">
+                    <a href="#" class="toggle-form" onclick="toggleForm('login-form', 'register-form')">Déjà un compte? Connexion</a>
+                </div>
+            </form>
         </div>
-        <!-- Champ Email -->
-        <div class="mb-3">
-            <label for="register-email" class="form-label">Email</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" name="email" class="form-control" id="register-email" placeholder="Entrez votre email" required>
-            </div>
-        </div>
-        <!-- Champ Mot de passe -->
-        <div class="mb-3">
-            <label for="register-password" class="form-label">Mot de passe</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" name="mot_de_passe" class="form-control" id="register-password" placeholder="Créez un mot de passe" required>
-            </div>
-        </div>
-        <!-- Champ Confirmation du mot de passe -->
-        <div class="mb-3">
-            <label for="register-confirm-password" class="form-label">Confirmez le mot de passe</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" name="Confirme_motPasse" class="form-control" id="register-confirm-password" placeholder="Confirmez votre mot de passe" required>
-            </div>
-        </div>
-        <!-- Choix du rôle (boutons radio) -->
-        <div class="mb-3">
-            <label class="form-label">Choisissez votre rôle</label>
-            <div class="form-check">
-                <input class="form-check-input" name="role" name="1" type="radio" name="register-role" id="register-role-etudiant" value="étudiant" required>
-                <label class="form-check-label" for="register-role-etudiant">Étudiant</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" name="role"  value="2"type="radio" name="register-role" id="register-role-enseignant" value="enseignant" required>
-                <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
-            </div>
-        </div>
-        <!-- Bouton d'inscription -->
-        <button type="submit" class="btn btn-primary">S'inscrire</button>
-        <!-- Lien pour basculer vers le formulaire de connexion -->
-        <div class="text-center mt-3">
-            <a href="#" class="toggle-form" onclick="toggleForm('login-form', 'register-form')">Déjà un compte? Connexion</a>
-        </div>
-    </form>
-</div>
-    </div>
     </div>
 
     <!-- Script pour basculer entre les formulaires -->
