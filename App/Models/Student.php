@@ -32,5 +32,11 @@ $success = InscriptionRepository::addInscription($this->getId(),$courseId);
     
  }
 
+ // methode pour virifier si etudiant deja inscrit a un cours
+
+ public function isEtudiantInscritCours($courseId){
+    return InscriptionRepository::isInscritCours($this->getId(),$courseId);
+ }
+
 
 }
