@@ -1,21 +1,25 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../../vendor/autoload.php';
+use App\Models\UserRepository;
 use App\Models\User;
+// use App\Entity\Student;
+// use App\Entity\Teacher;
+// use App\Entity\Admin;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['login'])) {
         // Traitement de la connexion
         $email = htmlspecialchars($_POST['email']);
         $password = $_POST['mot_de_passe'];
-        $user = User::login($email, $password); 
+        $user = UserRepository::login($email, $password); 
 
         if ($user) {
-            // Stocker les informations de l'utilisateur dans la session
+            // Stocker l'objet User dans la session
             $_SESSION['user'] = $user;
 
             // Rediriger en fonction du rôle
-            switch ($user['role_id']) {
+            switch ($user->getRole()) {
                 case User::ROLE_ADMIN: 
                     header('Location: ../admin/dashboard.php');
                     break;
@@ -43,10 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($password !== $confirm_password) {
             $register_error = "Les mots de passe ne correspondent pas.";
-        } elseif (User::emailExists($email)) {
+        } elseif (UserRepository::emailExists($email)) {
             $register_error = "Cet email est déjà utilisé.";
         } else {
-            if (User::register($username, $email, $password, $role)) {
+            if (UserRepository::register($username, $email, $password, $role)) {
                 $register_success = "Inscription réussie. <a href='login.php'>Connectez-vous</a>";
             } else {
                 $register_error = "Une erreur s'est produite. Veuillez réessayer.";
@@ -189,7 +193,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-
-
-
-
