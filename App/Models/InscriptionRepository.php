@@ -50,7 +50,24 @@ return false;
 
  }
 
+// Recupere  les cours suivis par un etudiant
 
- 
+public static function getInscritCourse($studentId){
+    $conn=  self::getConnection();
+    $sql="SELECT c.* FROM Cours c
+    JOIN Inscription i ON c.id= i.cours_id
+    WHERE i.etudiant_id=:etudiant_id";
+    
+    try{
+        $stmt=$conn->prepare($sql);
+        $stmt->execute(['etudiant_id'=>$studentId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }catch(PDOException $e){
+        error_log("Erreur lors de la recuperaation des cours suivis :" . $e->getMessage());
+            return false;
+    }
+
+
+}
 
 }
