@@ -81,4 +81,54 @@ public function getStatutId() {
 }
 
 
+//Setters
+public function setUsername($username) {
+    $this->username = $username;
 }
+
+public function setEmail($email) {
+    $this->email = $email;
+}
+
+public function setPasswordHash($passwordHash) {
+    $this->passwordHash = $passwordHash;
+}
+
+public function setRole($role) {
+    $this->role = $role;
+}
+
+public function setDateInscription($dateInscription) {
+    $this->dateInscription = $dateInscription;
+}
+
+public function setPhotoProfil($photoProfil) {
+    $this->photoProfil = $photoProfil;
+}
+
+public function setBio($bio) {
+    $this->bio = $bio;
+}
+
+public function setPays($pays) {
+    $this->pays = $pays;
+}
+
+public function setLangueId($langueId) {
+    $this->langueId = $langueId;
+}
+
+public function setStatutId($statutId) {
+    $this->statutId = $statutId;
+}
+
+// Méthode pour vérifier le mot de passe
+public function verifyPassword($password) {
+    return password_verify($password, $this->passwordHash);
+}
+
+// Méthode abstraite pour afficher le tableau de bord
+abstract public function showDashboard();
+}
+
+
