@@ -31,9 +31,9 @@ return false;
 
  }
 
- // verifie que deja inscrite
+ // verifie que deja inscrite 
 
- public static function isInscrit($studentId,$courseId){
+ public static function isInscritCours($studentId,$courseId){
     $conn=  self::getConnection();
     $sql="SELECT *FROM Inscription WHERE etudiant_id=: etudiant_id AND cours_id=:cours_id";
     try{

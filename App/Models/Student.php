@@ -13,13 +13,22 @@ class Student extends User {
  public function InscritInCourse($courseId){
     // virifie que etudiant deja fait insciption
 
-    if($this->isInscritCourse($courseId)){
+    if($this->isInscritCours($courseId)){
         return "vous etes deja inscrita ce course";
     }
 
 
 
     // enregistre l'inscription dans database
+$success = InscriptionRepository::addInscription($this->getId(),$courseId);
+
+ if($success){
+    return "Inscription au cours reussie";
+ }else{
+    return "errure inscrite a cour";
+ }
+
+
     
  }
 
