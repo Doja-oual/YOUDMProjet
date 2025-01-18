@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
+require_once __DIR__ . '/../../vendor/autoload.php';
 
+use App\Models\User;
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
 use App\Models\InscriptionRepository;
@@ -9,6 +11,26 @@ use App\Models\CertificatRepository;
 
 
 class Student extends User {
+
+        public function __construct(User $user) {
+            parent::__construct(
+                $user->getId(),
+                $user->getUsername(),
+                $user->getEmail(),
+                $user->getPasswordHash(),
+                $user->getRole(),
+                $user->getDateInscription(),
+                $user->getPhotoProfil(),
+                $user->getBio(),
+                $user->getPays(),
+                $user->getLangueId(),
+                $user->getStatutId()
+            );
+        }
+    
+        
+    
+
     public function showDashboard() {
         return "Tableau de bord Étudiant";
     }
@@ -75,4 +97,11 @@ $success = InscriptionRepository::addInscription($this->getId(),$courseId);
    public function getMyCertificats(){
      return CertificatRepository::getCertificatresByStudent($this->getId());
    }
+
+   // recupere les cours d'etudiant
+   public function getMyCourse(){
+    return InscriptionRepository::getInscritCourse($this->getId());
+  }
+
+
 }

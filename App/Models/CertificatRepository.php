@@ -12,7 +12,7 @@ class CertificatRepository{
 
     // recuperer les cirtificats d'un etudiant
 
-    public static function  getCertificatresByStudent($student){
+    public static function  getCertificatresByStudent($studentId){
         $conn = self::getConnection();
         $sql="SELECT *FROM Certificat WHERE etudiant_id=:etudiant_id";
 

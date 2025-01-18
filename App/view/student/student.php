@@ -1,18 +1,39 @@
 <?php
-// teacher.php
+// Inclure l'autoload de Composer
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
-// Démarrer la session
+// Utiliser les classes nécessaires
+use App\Models\User;
+use App\Models\Student;
+use App\Models\UserRepository;
+use App\Models\CertificatRepository;
+
+// Demarrer la session
 session_start();
 
-// Vérifier si l'utilisateur est connecté
+// Verifier si l'utilisateur est connecte
 if (!isset($_SESSION['user'])) {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecte
     header('Location: ../../views/auth/login.php');
     exit();
 }
 
-// Récupérer les informations de l'utilisateur
+// recupere l'objet User de la session
 $user = $_SESSION['user'];
+
+// Verifier que l'objet est bien une instance de User ou d'une de ses classes enfant
+if (!($user instanceof User)) {
+    die("Erreur : L'objet dans la session n'est pas une instance de User.");
+}
+
+// Créer une instance de Student avec l'objet User
+$student = new Student($user);
+
+// Récupérer les cours en cours de l'étudiant
+$enrolledCourses = $student->getMyCourse($student->getId());
+
+// Récupérer les certifications de l'étudiant
+$certificates = $student->getMyCertificats($student->getId());
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +86,7 @@ $user = $_SESSION['user'];
         <div class="container">
             <!-- Bienvenue -->
             <section class="welcome-section">
-                <h1>Bienvenue, <span class="student-name">Mohamed</span> !</h1>
+                <h1>Bienvenue, <span class="student-name"><?php echo htmlspecialchars($student->getUsername()); ?></span> !</h1>
                 <p>Commencez votre parcours d'apprentissage dès aujourd'hui.</p>
             </section>
 
@@ -73,48 +94,25 @@ $user = $_SESSION['user'];
             <section class="ongoing-courses">
                 <h2>Mes cours en cours</h2>
                 <div class="row">
-                    <!-- Cours 1 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 1">
-                            <div class="card-body">
-                                <h5 class="card-title">Développement Web</h5>
-                                <p class="card-text">Apprenez à créer des sites web modernes avec HTML, CSS et JavaScript.</p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                    <?php if (!empty($enrolledCourses)): ?>
+                        <?php foreach ($enrolledCourses as $course): ?>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 1">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo htmlspecialchars($course['name']); ?></h5>
+                                        <p class="card-text"><?php echo htmlspecialchars($course['description']); ?></p>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: <?php echo htmlspecialchars($course['progress']); ?>%;" aria-valuenow="<?php echo htmlspecialchars($course['progress']); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo htmlspecialchars($course['progress']); ?>%</div>
+                                        </div>
+                                        <a href="#" class="btn btn-primary mt-3">Continuer</a>
+                                    </div>
                                 </div>
-                                <a href="#" class="btn btn-primary mt-3">Continuer</a>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Cours 2 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 2">
-                            <div class="card-body">
-                                <h5 class="card-title">Marketing Digital</h5>
-                                <p class="card-text">Maîtrisez les stratégies de marketing en ligne pour booster votre entreprise.</p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">30%</div>
-                                </div>
-                                <a href="#" class="btn btn-primary mt-3">Continuer</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Cours 3 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 3">
-                            <div class="card-body">
-                                <h5 class="card-title">Data Science</h5>
-                                <p class="card-text">Explorez les données et apprenez à utiliser Python pour l'analyse de données.</p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
-                                </div>
-                                <a href="#" class="btn btn-primary mt-3">Continuer</a>
-                            </div>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Aucun cours en cours pour le moment.</p>
+                    <?php endif; ?>
                 </div>
             </section>
 
@@ -122,79 +120,22 @@ $user = $_SESSION['user'];
             <section class="certifications">
                 <h2>Mes certifications</h2>
                 <div class="row">
-                    <!-- Certification 1 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Certification 1">
-                            <div class="card-body">
-                                <h5 class="card-title">Certification HTML/CSS</h5>
-                                <p class="card-text">Certification en développement web de base.</p>
-                                <a href="#" class="btn btn-primary">Voir la certification</a>
+                    <?php if (!empty($certificates)): ?>
+                        <?php foreach ($certificates as $certificate): ?>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Certification 1">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo htmlspecialchars($certificate['name']); ?></h5>
+                                        <p class="card-text">Certification obtenue le <?php echo htmlspecialchars($certificate['date']); ?>.</p>
+                                        <a href="#" class="btn btn-primary">Voir la certification</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Certification 2 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Certification 2">
-                            <div class="card-body">
-                                <h5 class="card-title">Certification Marketing Digital</h5>
-                                <p class="card-text">Certification en stratégies de marketing en ligne.</p>
-                                <a href="#" class="btn btn-primary">Voir la certification</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Certification 3 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Certification 3">
-                            <div class="card-body">
-                                <h5 class="card-title">Certification Python</h5>
-                                <p class="card-text">Certification en programmation Python pour la data science.</p>
-                                <a href="#" class="btn btn-primary">Voir la certification</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Recommandations de cours -->
-            <section class="recommended-courses">
-                <h2>Recommandations de cours</h2>
-                <div class="row">
-                    <!-- Cours 1 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 1">
-                            <div class="card-body">
-                                <h5 class="card-title">Intelligence Artificielle</h5>
-                                <p class="card-text">Découvrez les bases de l'IA et du machine learning.</p>
-                                <a href="#" class="btn btn-primary">Commencer</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Cours 2 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 2">
-                            <div class="card-body">
-                                <h5 class="card-title">Cybersécurité</h5>
-                                <p class="card-text">Apprenez à protéger les systèmes contre les cyberattaques.</p>
-                                <a href="#" class="btn btn-primary">Commencer</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Cours 3 -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Cours 3">
-                            <div class="card-body">
-                                <h5 class="card-title">Gestion de projet</h5>
-                                <p class="card-text">Maîtrisez les outils et techniques de gestion de projet.</p>
-                                <a href="#" class="btn btn-primary">Commencer</a>
-                            </div>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Aucune certification obtenue pour le moment.</p>
+                    <?php endif; ?>
                 </div>
             </section>
         </div>
