@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Core\Model;
 use Config\Database;
 
-class Course extends Model {
+class CoursRepository extends Model {
     public static function getConnection(){
         return  Database::getConnection();
     }
