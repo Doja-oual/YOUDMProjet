@@ -60,8 +60,12 @@ $success = InscriptionRepository::addInscription($this->getId(),$courseId);
         return " Errure lors de l'enregistrement de l'evaluation";
     }
 
-    
  }
 
+   //recupere les evaluation
+   
+   public function getMyEvaluation(){
+    return EvaluationRepository::getEvaluationsByStudent($this->getId());
+   }
 
 }
