@@ -5,6 +5,7 @@ use App\Models\UserRepository;
 use App\Models\CoursRepository;
 use App\Models\InscriptionRepository;
 use App\Models\EvaluationRepository;
+use App\Models\CertificatRepository;
 
 
 class Student extends User {
@@ -68,4 +69,10 @@ $success = InscriptionRepository::addInscription($this->getId(),$courseId);
     return EvaluationRepository::getEvaluationsByStudent($this->getId());
    }
 
+
+   //methode pour recupere cirtificats de l'etudiant
+
+   public function getMyCertificats(){
+     return CertificatRepository::getCertificatresByStudent($this->getId());
+   }
 }
