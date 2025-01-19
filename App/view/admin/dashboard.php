@@ -4,12 +4,10 @@ require_once __DIR__. '/../../../vendor/autoload.php';
 
 use App\Models\Admin;
 use App\Models\User;
-
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
 
 // Créer une instance de la classe Admin
-// Remplacez les valeurs par défaut par les données réelles si nécessaire
 $admin = new Admin(
     1, // ID de l'admin
     'AdminName', // Nom de l'admin
@@ -39,6 +37,46 @@ $totalTeachers = UserRepository::getTotalTeachers();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/css.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Styles pour les cartes de statistiques */
+        .stat-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h5 {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
+            margin: 0;
+        }
+
+        /* Styles pour les conteneurs de graphiques */
+        .chart-container {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -54,7 +92,7 @@ $totalTeachers = UserRepository::getTotalTeachers();
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    <a href="#">Déconnexion</a> <!-- Lien de déconnexion désactivé -->
+                    <a href="#">Déconnexion</a>
                 </button>
             </div>
         </div>
@@ -63,15 +101,86 @@ $totalTeachers = UserRepository::getTotalTeachers();
     <!-- Sidebar -->
     <div class="sidebar">
         <h3>Youdemy Admin</h3>
-        <a href="?page=dashboard"><i class="fas fa-home"></i> Accueil</a>
-        <a href="?page=users"><i class="fas fa-users"></i> Gestion des utilisateurs</a>
-        <a href="?page=courses"><i class="fas fa-book"></i> Gestion des cours</a>
-        <a href="?page=categories"><i class="fas fa-tags"></i> Gestion des catégories</a>
-        <a href="?page=statistics"><i class="fas fa-chart-line"></i> Statistiques</a>
+        <ul class="sidebar-menu">
+            <!-- Accueil -->
+            <li>
+                <a href="?page=dashboard">
+                    <i class="fas fa-home"></i> <span>Accueil</span>
+                </a>
+            </li>
+
+            <!-- Gestion des utilisateurs -->
+            <li class="has-submenu">
+                <a href="#">
+                    <i class="fas fa-users"></i> <span>Gestion des utilisateurs</span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="?page=validate_teachers">
+                            <i class="fas fa-check-circle"></i> <span>Valider les enseignants</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=list_students">
+                            <i class="fas fa-user-graduate"></i> <span>Liste des étudiants</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=list_teachers">
+                            <i class="fas fa-chalkboard-teacher"></i> <span>Liste des enseignants</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=manage_users">
+                            <i class="fas fa-cogs"></i> <span>Gérer les utilisateurs</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Gestion des cours -->
+            <li class="has-submenu">
+                <a href="#">
+                    <i class="fas fa-book"></i> <span>Gestion des cours</span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="?page=list_courses">
+                            <i class="fas fa-list"></i> <span>Liste des cours</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=add_course">
+                            <i class="fas fa-plus-circle"></i> <span>Ajouter un cours</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=edit_course">
+                            <i class="fas fa-edit"></i> <span>Modifier un cours</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=delete_course">
+                            <i class="fas fa-trash"></i> <span>Supprimer un cours</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Statistiques -->
+            <li>
+                <a href="?page=statistics">
+                    <i class="fas fa-chart-line"></i> <span>Statistiques</span>
+                </a>
+            </li>
+        </ul>
     </div>
 
     <!-- Contenu principal -->
     <div class="main-content">
+        <!-- Cartes de Statistiques -->
         <div class="row">
             <div class="col-md-4">
                 <div class="stat-card">
@@ -89,6 +198,28 @@ $totalTeachers = UserRepository::getTotalTeachers();
                 <div class="stat-card">
                     <h5>Nombre d'enseignants</h5>
                     <p><?= $totalTeachers ?></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <canvas id="usersChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <canvas id="coursesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="chart-container">
+                    <canvas id="subscriptionsChart"></canvas>
                 </div>
             </div>
         </div>
@@ -110,6 +241,108 @@ $totalTeachers = UserRepository::getTotalTeachers();
         </div>
     </footer>
 
-    <script src="scripts.js"></script>
+    <script>
+        // Graphique en Secteurs (Répartition des utilisateurs)
+        const usersCtx = document.getElementById('usersChart').getContext('2d');
+        const usersChart = new Chart(usersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Étudiants', 'Enseignants', 'Administrateurs'],
+                datasets: [{
+                    label: 'Utilisateurs',
+                    data: [<?= $totalStudents ?>, <?= $totalTeachers ?>, 5], // Admins statiques
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des Utilisateurs'
+                    }
+                }
+            }
+        });
+
+        // Graphique en Barres (Nombre de cours par mois)
+        const coursesCtx = document.getElementById('coursesChart').getContext('2d');
+        const coursesChart = new Chart(coursesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Nombre de Cours',
+                    data: [12, 19, 3, 5, 2, 3], // Données statiques
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Nombre de Cours par Mois'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graphique en Ligne (Évolution des inscriptions)
+        const subscriptionsCtx = document.getElementById('subscriptionsChart').getContext('2d');
+        const subscriptionsChart = new Chart(subscriptionsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Inscriptions',
+                    data: [65, 59, 80, 81, 56, 55], // Données statiques
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 0.8)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Évolution des Inscriptions'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

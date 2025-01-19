@@ -37,6 +37,16 @@ class CoursRepository extends Model {
     public function createCourse($data) {
         return parent::add($this->table,$data);
     }
+
+    // recupere les nombre des course par moin
+    public static function getCoursesByMonth() {
+        // Exemple de requête SQL pour récupérer le nombre de cours par mois
+        $sql = "SELECT MONTH(created_at) AS month, COUNT(*) AS total 
+                FROM courses 
+                GROUP BY MONTH(created_at)";
+        // Exécuter la requête et retourner les résultats
+        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
     // ajoute methode de calcule totale de course
     public static function getTotalCourses() {
         $conn = Database::getConnection();
