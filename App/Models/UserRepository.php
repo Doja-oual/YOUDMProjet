@@ -109,6 +109,36 @@ class UserRepository {
             return false;
         }
     }
+    // totalstudents
+    public static function getTotalStudents() {
+        $conn = Database::getConnection();
+        $sql = "SELECT COUNT(*) AS total FROM Utilisateur WHERE role_id = :role_id";
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['role_id' => User::ROLE_ETUDIANT]);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération du nombre total d'étudiants : " . $e->getMessage());
+            return 0; // Retourne 0 en cas d'erreur
+        }
+    }
+    // total teachers 
+    public static function getTotalTeachers() {
+        $conn = Database::getConnection();
+        $sql = "SELECT COUNT(*) AS total FROM Utilisateur WHERE role_id = :role_id";
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['role_id' => User::ROLE_ENSEIGNANT]);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération du nombre total d'enseignants : " . $e->getMessage());
+            return 0; // Retourne 0 en cas d'erreur
+        }
+    }
 
     // Récupérer tous les utilisateurs
     public static function getAllUsers() {
