@@ -124,6 +124,30 @@ class UserRepository {
             return 0; // Retourne 0 en cas d'erreur
         }
     }
+    // recupere list de etudiant
+    public static function getStudents() {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                Utilisateur.id,
+                Utilisateur.nom,
+                Utilisateur.email,
+                Utilisateur.date_inscription,
+                Utilisateur.photo_profil,
+                Utilisateur.statut_id
+            FROM Utilisateur
+            WHERE Utilisateur.role_id = :role_id
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['role_id' => User::ROLE_ETUDIANT]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des étudiants : " . $e->getMessage());
+            return false;
+        }
+    }
     // repartition des user 
     public static function getUsersDistribution() {
         $conn = Database::getConnection();

@@ -83,9 +83,9 @@ class Admin extends User {
     }
 
     public function getPendingTeachers() {
-        return UserRepository::getUsersByRoleAndStatus(User::ROLE_ENSEIGNANT, User::STATUS_PENDING);
+        // Fetch teachers with the STATUS_PENDING status
+        return $this->getUsersByRoleAndStatus(self::ROLE_ENSEIGNANT, self::STATUS_PENDING);
     }
-
     public function getAllUsers() {
         return UserRepository::getAllUsers();
     }

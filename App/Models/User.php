@@ -1,13 +1,19 @@
 <?php
+
 namespace App\Models;
 
 abstract class User {
-    // Constantes pour les rôles
+    // Constants for roles
     const ROLE_ETUDIANT = 1;
     const ROLE_ENSEIGNANT = 2;
     const ROLE_ADMIN = 3;
 
-    // Propriétés protégées
+    // Constants for statuses
+    const STATUS_PENDING = 1; // Pending approval
+    const STATUS_ACTIVE = 2;  // Active
+    const STATUS_INACTIVE = 3; // Inactive
+
+    // Protected properties
     protected $id;
     protected $username;
     protected $email;
@@ -20,7 +26,7 @@ abstract class User {
     protected $langueId;
     protected $statutId;
 
-    // Constructeur
+    // Constructor
     public function __construct($id, $username, $email, $passwordHash, $role, $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
         $this->id = $id;
         $this->username = $username;
@@ -121,11 +127,11 @@ abstract class User {
         $this->statutId = $statutId;
     }
 
-    // Méthode pour vérifier le mot de passe
+    // Verify password
     public function verifyPassword($password) {
         return password_verify($password, $this->passwordHash);
     }
 
-    // Méthode abstraite pour afficher le tableau de bord
+    // Abstract method for displaying the dashboard
     abstract public function showDashboard();
 }

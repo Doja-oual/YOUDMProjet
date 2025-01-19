@@ -92,6 +92,27 @@ class CoursRepository extends Model {
             return false;
         }
     }
+    // ajoute methode qui recupere course avec nome et techer
+    public function getCoursesWithTeacherInfo() {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                Cours.titre AS cours_titre,
+                Cours.date_creation AS cours_date_creation,
+                Utilisateur.nom AS enseignant_nom
+            FROM Cours
+            LEFT JOIN Utilisateur ON Cours.enseignant_id = Utilisateur.id
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours avec les informations de l'enseignant : " . $e->getMessage());
+            return false;
+        }
+    }
 
     public function getCourseById($id) {
         return parent::find($this->table,$id);
