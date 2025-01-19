@@ -129,5 +129,3 @@ abstract class User {
     // Méthode abstraite pour afficher le tableau de bord
     abstract public function showDashboard();
 }
-
-

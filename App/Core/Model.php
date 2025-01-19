@@ -73,6 +73,24 @@ class Model{
     $stmt->bindValue(':id', $id);
     return $stmt->execute();
 }
+
+public static function findBy($table, $conditions) {
+    $conn = Database::getConnection();
+    $where = [];
+    foreach ($conditions as $key => $value) {
+        $where[] = "$key = :$key";
+    }
+    $sql = "SELECT * FROM $table WHERE " . implode(" AND ", $where);
+    $stmt = $conn->prepare($sql);
+
+    foreach ($conditions as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+
+    $stmt->execute();
+    return $stmt->fetch(\PDO::FETCH_ASSOC);
+}
+
   }
 
 
