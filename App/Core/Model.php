@@ -91,6 +91,23 @@ public static function findBy($table, $conditions) {
     return $stmt->fetch(\PDO::FETCH_ASSOC);
 }
 
+public static function findAllBy($table, $conditions) {
+    $conn = Database::getConnection();
+    $where = [];
+    foreach ($conditions as $key => $value) {
+        $where[] = "$key = :$key";
+    }
+    $sql = "SELECT * FROM $table WHERE " . implode(" AND ", $where);
+    $stmt = $conn->prepare($sql);
+
+    foreach ($conditions as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+
+    $stmt->execute();
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
   }
 
 
