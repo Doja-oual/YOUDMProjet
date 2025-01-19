@@ -27,5 +27,24 @@ class Category extends Model {
     public function deleteCategorie($id) {
         return parent::delete($this->table, $id);
     }
+    public function findCategoryById($id) {
+        return parent::find($this->table, $id);
+    }
+
+    public function findCategoryBy($conditions) {
+        return parent::findBy($this->table, $conditions);
+    }
+
+    public function findAllCategoriesBy($conditions) {
+        return parent::findAllBy($this->table, $conditions);
+    }
+
+    public function countCategories() {
+        return parent::count($this->table);
+    }
+
+    public function categoryExists($conditions) {
+        return parent::exists($this->table, $conditions);
+    }
 }
 ?>
