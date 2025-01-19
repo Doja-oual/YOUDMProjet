@@ -27,5 +27,25 @@ class Tag extends Model {
     public function deleteTag($id) {
         return parent::delete($this->table, $id);
     }
+
+    public function findTagById($id) {
+        return parent::find($this->table, $id);
+    }
+
+    public function findTagBy($conditions) {
+        return parent::findBy($this->table, $conditions);
+    }
+
+    public function findAllTagsBy($conditions) {
+        return parent::findAllBy($this->table, $conditions);
+    }
+
+    public function countTags() {
+        return parent::count($this->table);
+    }
+
+    public function tagExists($conditions) {
+        return parent::exists($this->table, $conditions);
+    }
 }
 ?>
