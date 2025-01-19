@@ -107,7 +107,31 @@ public static function findAllBy($table, $conditions) {
     $stmt->execute();
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 }
+//Compte le nombre total d'enregistrements dans une table.
+public static function count($table) {
+    $conn = Database::getConnection();
+    $sql = "SELECT COUNT(*) AS total FROM $table";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+}
+//Vérifie si un enregistrement existe en fonction de conditions spécifiques.
+public static function exists($table, $conditions) {
+    $conn = Database::getConnection();
+    $where = [];
+    foreach ($conditions as $key => $value) {
+        $where[] = "$key = :$key";
+    }
+    $sql = "SELECT COUNT(*) AS total FROM $table WHERE " . implode(" AND ", $where);
+    $stmt = $conn->prepare($sql);
 
+    foreach ($conditions as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+
+    $stmt->execute();
+    return $stmt->fetch(\PDO::FETCH_ASSOC)['total'] > 0;
+}
   }
 
 
