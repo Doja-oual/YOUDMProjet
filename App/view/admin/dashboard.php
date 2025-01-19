@@ -1,22 +1,35 @@
-
-
-
 <?php
-// teacher.php
+// Importer les classes nécessaires
+require_once __DIR__. '/../../../vendor/autoload.php';
 
-// Démarrer la session
-session_start();
+use App\Models\Admin;
+use App\Models\User;
 
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user'])) {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    header('Location: ../../views/auth/login.php');
-    exit();
-}
+use App\Models\UserRepository;
+use App\Models\CoursRepository;
 
-// Récupérer les informations de l'utilisateur
-$user = $_SESSION['user'];
+// Créer une instance de la classe Admin
+// Remplacez les valeurs par défaut par les données réelles si nécessaire
+$admin = new Admin(
+    1, // ID de l'admin
+    'AdminName', // Nom de l'admin
+    'admin@example.com', // Email de l'admin
+    'hashed_password', // Mot de passe hashé
+    User::ROLE_ADMIN, // Rôle (admin)
+    '2023-01-01', // Date d'inscription
+    'profile.jpg', // Photo de profil
+    'Bio de l\'admin', // Bio
+    'Pays', // Pays
+    1, // Langue ID
+    1 // Statut ID
+);
+
+// Récupérer les statistiques globales
+$totalCourses = CoursRepository::getTotalCourses();
+$totalStudents = UserRepository::getTotalStudents();
+$totalTeachers = UserRepository::getTotalTeachers();
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -39,8 +52,9 @@ $user = $_SESSION['user'];
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
                 </div>
-                <button class="btn btn-logout" >
-                <i class="fas fa-sign-out-alt"></i><a  href="../front/logout.php">Déconnexion</a>
+                <button class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <a href="#">Déconnexion</a> <!-- Lien de déconnexion désactivé -->
                 </button>
             </div>
         </div>
@@ -49,11 +63,11 @@ $user = $_SESSION['user'];
     <!-- Sidebar -->
     <div class="sidebar">
         <h3>Youdemy Admin</h3>
-        <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
-        <a href="gestion-utilisateurs.html"><i class="fas fa-users"></i> Gestion des utilisateurs</a>
-        <a href="gestion-cours.html"><i class="fas fa-book"></i> Gestion des cours</a>
-        <a href="gestion-categories.html"><i class="fas fa-tags"></i> Gestion des catégories</a>
-        <a href="statistiques.html"><i class="fas fa-chart-line"></i> Statistiques</a>
+        <a href="?page=dashboard"><i class="fas fa-home"></i> Accueil</a>
+        <a href="?page=users"><i class="fas fa-users"></i> Gestion des utilisateurs</a>
+        <a href="?page=courses"><i class="fas fa-book"></i> Gestion des cours</a>
+        <a href="?page=categories"><i class="fas fa-tags"></i> Gestion des catégories</a>
+        <a href="?page=statistics"><i class="fas fa-chart-line"></i> Statistiques</a>
     </div>
 
     <!-- Contenu principal -->
@@ -62,19 +76,19 @@ $user = $_SESSION['user'];
             <div class="col-md-4">
                 <div class="stat-card">
                     <h5>Nombre total de cours</h5>
-                    <p>1,234</p>
+                    <p><?= $totalCourses ?></p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h5>Nombre d'étudiants</h5>
-                    <p>5,678</p>
+                    <p><?= $totalStudents ?></p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h5>Nombre d'enseignants</h5>
-                    <p>123</p>
+                    <p><?= $totalTeachers ?></p>
                 </div>
             </div>
         </div>

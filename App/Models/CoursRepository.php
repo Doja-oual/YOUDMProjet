@@ -37,26 +37,43 @@ class CoursRepository extends Model {
     public function createCourse($data) {
         return parent::add($this->table,$data);
     }
+    // ajoute methode de calcule totale de course
+    public static function getTotalCourses() {
+        $conn = Database::getConnection();
+        $sql = "SELECT COUNT(*) AS total FROM Cours";
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération du nombre total de cours : " . $e->getMessage());
+            return 0; // Retourne 0 en cas d'erreur
+        }}
 
     public function getAllCourses() {
-        $conn=self::getConnection();
-        $sql="
-        SELECT Cours.*,
-        Categorie.nom as category.nom,
-        GROUP_CONTACT(Tag.nom SEPARATOR  ',') AS tags
-        FROM Cours
-        LEFT JOIN 
-        Categorie ON Cours.categorie_id = Categorie.id
-        LEFT JOIN 
-        CoursTag ON Cours.id=CoursTag.cours_id
-        LEFT JOIN 
-        *
-        Tag ON CoursTag.tag_id=Tag.id
-        GROUP BY
-        Cours.id";
-        $stmt=$conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                Cours.*,
+                Categorie.nom AS categorie_nom,
+                GROUP_CONCAT(Tag.nom SEPARATOR ', ') AS tags
+            FROM Cours
+            LEFT JOIN Categorie ON Cours.categorie_id = Categorie.id
+            LEFT JOIN CoursTag ON Cours.id = CoursTag.cours_id
+            LEFT JOIN Tag ON CoursTag.tag_id = Tag.id
+            GROUP BY Cours.id;
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours : " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getCourseById($id) {
@@ -113,6 +130,101 @@ class CoursRepository extends Model {
             return false;
         }
     }
-
+    // recupere par categorie
+    public static function getCoursesByCategory($categoryId) {
+        $conn = self::getConnection();
+        $sql = "SELECT * FROM Cours WHERE categorie_id = :categorie_id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['categorie_id' => $categoryId]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours par catégorie : " . $e->getMessage());
+            return false;
+        }
+    }
+    // cours plus inscription
+    public static function getMostPopularCourses($limit = 5) {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT Cours.*, COUNT(Inscription.etudiant_id) AS total_inscriptions
+            FROM Cours
+            LEFT JOIN Inscription ON Cours.id = Inscription.cours_id
+            GROUP BY Cours.id
+            ORDER BY total_inscriptions DESC
+            LIMIT :limit;
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours populaires : " . $e->getMessage());
+            return false;
+        }
+    }
+    // recupere les statistique d'un cours
+    public static function getCourseStatistics($courseId) {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                COUNT(Inscription.etudiant_id) AS total_inscriptions,
+                AVG(Evaluation.note) AS moyenne_notes
+            FROM Cours
+            LEFT JOIN Inscription ON Cours.id = Inscription.cours_id
+            LEFT JOIN Evaluation ON Cours.id = Evaluation.cours_id
+            WHERE Cours.id = :course_id;
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['course_id' => $courseId]);
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des statistiques du cours : " . $e->getMessage());
+            return false;
+        }
+    }
+    // supreme un tage d'un cours 
+    public static function removeTagFromCours($coursId, $tagId) {
+        $conn = self::getConnection();
+        $sql = "DELETE FROM CoursTag WHERE cours_id = :cours_id AND tag_id = :tag_id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['cours_id' => $coursId, 'tag_id' => $tagId]);
+            return true;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suppression du tag du cours : " . $e->getMessage());
+            return false;
+        }
+    }
+    // recupere tou tout les cours avec tag et catrgory
+    public static function getAllCoursesWithDetails() {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                Cours.*,
+                Categorie.nom AS categorie_nom,
+                GROUP_CONCAT(Tag.nom SEPARATOR ', ') AS tags
+            FROM Cours
+            LEFT JOIN Categorie ON Cours.categorie_id = Categorie.id
+            LEFT JOIN CoursTag ON Cours.id = CoursTag.cours_id
+            LEFT JOIN Tag ON CoursTag.tag_id = Tag.id
+            GROUP BY Cours.id;
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours avec détails : " . $e->getMessage());
+            return false;
+        }
+    }
     
 }

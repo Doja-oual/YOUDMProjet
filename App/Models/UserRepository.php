@@ -262,4 +262,68 @@ class UserRepository {
             return false;
         }
     }
+//Active un utilisateur (valide un compte enseignant).
+    public static function activateUser($userId) {
+        $conn = self::getConnection();
+        $sql = "UPDATE Utilisateur SET statut_id = :statut_id WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            return $stmt->execute(['statut_id' => User::STATUS_ACTIVE, 'id' => $userId]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de l'activation de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
+    }
+    // Suspend un utilisateur
+    
+    public static function suspendUser($userId) {
+        $conn = self::getConnection();
+        $sql = "UPDATE Utilisateur SET statut_id = :statut_id WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            return $stmt->execute(['statut_id' => User::STATUS_SUSPENDED, 'id' => $userId]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suspension de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
+    }
+    //Récupère les utilisateurs par rôle et statut.
+    public static function getUsersByRoleAndStatus($roleId, $statusId) {
+        $conn = self::getConnection();
+        $sql = "SELECT * FROM Utilisateur WHERE role_id = :role_id AND statut_id = :statut_id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['role_id' => $roleId, 'statut_id' => $statusId]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des utilisateurs par rôle et statut : " . $e->getMessage());
+            return false;
+        }
+    }
+    //REcupere les meilleurs enseignants.
+    public static function getTopTeachers($limit) {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT Utilisateur.*, COUNT(Cours.id) AS total_courses
+            FROM Utilisateur
+            LEFT JOIN Cours ON Utilisateur.id = Cours.enseignant_id
+            WHERE Utilisateur.role_id = :role_id
+            GROUP BY Utilisateur.id
+            ORDER BY total_courses DESC
+            LIMIT :limit;
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['role_id' => User::ROLE_ENSEIGNANT, 'limit' => $limit]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des meilleurs enseignants : " . $e->getMessage());
+            return false;
+        }
+    }
+
 }
