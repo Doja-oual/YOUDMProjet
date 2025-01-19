@@ -98,4 +98,21 @@ class CoursRepository extends Model {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         
     }
+
+    //Recupere les cours par teacher 
+    public static function getCoursesByTeacher($teacherId) {
+        $conn = self::getConnection();
+        $sql = "SELECT * FROM Cours WHERE enseignant_id = :enseignant_id";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['enseignant_id' => $teacherId]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des cours de l'enseignant : " . $e->getMessage());
+            return false;
+        }
+    }
+
+    
 }
