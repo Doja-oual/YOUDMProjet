@@ -4,10 +4,12 @@ require_once __DIR__. '/../../../vendor/autoload.php';
 
 use App\Models\Admin;
 use App\Models\User;
+
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
 
 // Créer une instance de la classe Admin
+// Remplacez les valeurs par défaut par les données réelles si nécessaire
 $admin = new Admin(
     1, // ID de l'admin
     'AdminName', // Nom de l'admin
@@ -26,25 +28,6 @@ $admin = new Admin(
 $totalCourses = CoursRepository::getTotalCourses();
 $totalStudents = UserRepository::getTotalStudents();
 $totalTeachers = UserRepository::getTotalTeachers();
-
-// Récupérer les données réelles pour les graphiques
-$coursesByMonth = CoursRepository::getCoursesByMonth();
-$usersDistribution = UserRepository::getUsersDistribution();
-
-// Préparer les données pour les graphiques
-$months = [];
-$coursesData = [];
-foreach ($coursesByMonth as $course) {
-    $months[] = date('M', mktime(0, 0, 0, $course['month'], 10)); // Convertir le numéro du mois en nom (Jan, Fév, etc.)
-    $coursesData[] = $course['total'];
-}
-
-$usersLabels = [];
-$usersData = [];
-foreach ($usersDistribution as $user) {
-    $usersLabels[] = $user['role'];
-    $usersData[] = $user['total'];
-}
 ?>
 
 <!DOCTYPE html>
@@ -56,46 +39,6 @@ foreach ($usersDistribution as $user) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/css.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Styles pour les cartes de statistiques */
-        .stat-card {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-card h5 {
-            font-size: 1.2rem;
-            color: #6c757d;
-            margin-bottom: 10px;
-        }
-
-        .stat-card p {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #343a40;
-            margin: 0;
-        }
-
-        /* Styles pour les conteneurs de graphiques */
-        .chart-container {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
 </head>
 <body>
     <!-- Header -->
@@ -111,13 +54,13 @@ foreach ($usersDistribution as $user) {
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    <a href="#">Déconnexion</a>
+                    <a href="#">Déconnexion</a> <!-- Lien de déconnexion désactivé -->
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Sidebar (intégrée du deuxième code) -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <h3>Youdemy Admin</h3>
         <ul class="sidebar-menu">
@@ -157,35 +100,6 @@ foreach ($usersDistribution as $user) {
                     </li>
                 </ul>
             </li>
-            <!-- Gestion des tags -->
-<li class="has-submenu">
-    <a href="#">
-        <i class="fas fa-tags"></i> <span>Gestion des tags</span>
-        <i class="fas fa-chevron-down dropdown-icon"></i>
-    </a>
-    <ul class="submenu">
-        <li>
-            <a href="?page=list_tags">
-                <i class="fas fa-list"></i> <span>Liste des tags</span>
-            </a>
-        </li>
-        <li>
-            <a href="?page=add_tag">
-                <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
-            </a>
-        </li>
-        <li>
-            <a href="?page=edit_tag">
-                <i class="fas fa-edit"></i> <span>Modifier un tag</span>
-            </a>
-        </li>
-        <li>
-            <a href="?page=delete_tag">
-                <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
-            </a>
-        </li>
-    </ul>
-</li>
 
             <!-- Gestion des cours -->
             <li class="has-submenu">
@@ -258,7 +172,6 @@ foreach ($usersDistribution as $user) {
 
     <!-- Contenu principal -->
     <div class="main-content">
-        <!-- Cartes de Statistiques -->
         <div class="row">
             <div class="col-md-4">
                 <div class="stat-card">
@@ -276,20 +189,6 @@ foreach ($usersDistribution as $user) {
                 <div class="stat-card">
                     <h5>Nombre d'enseignants</h5>
                     <p><?= $totalTeachers ?></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Graphiques -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <canvas id="usersChart"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <canvas id="coursesChart"></canvas>
                 </div>
             </div>
         </div>
@@ -311,78 +210,8 @@ foreach ($usersDistribution as $user) {
         </div>
     </footer>
 
-    <!-- Scripts JavaScript -->
     <script>
-        // Graphique en Secteurs (Répartition des utilisateurs)
-        const usersCtx = document.getElementById('usersChart').getContext('2d');
-        const usersChart = new Chart(usersCtx, {
-            type: 'doughnut',
-            data: {
-                labels: <?= json_encode($usersLabels) ?>, // Rôles récupérés depuis la base de données
-                datasets: [{
-                    label: 'Utilisateurs',
-                    data: <?= json_encode($usersData) ?>, // Données réelles
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.8)', // Étudiants
-                        'rgba(255, 99, 132, 0.8)', // Enseignants
-                        'rgba(75, 192, 192, 0.8)'  // Administrateurs
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Répartition des Utilisateurs'
-                    }
-                }
-            }
-        });
-
-        // Graphique en Barres (Nombre de cours par mois)
-        const coursesCtx = document.getElementById('coursesChart').getContext('2d');
-        const coursesChart = new Chart(coursesCtx, {
-            type: 'bar',
-            data: {
-                labels: <?= json_encode($months) ?>, // Mois récupérés depuis la base de données
-                datasets: [{
-                    label: 'Nombre de Cours',
-                    data: <?= json_encode($coursesData) ?>, // Données réelles
-                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    title: {
-                        display: true,
-                        text: 'Nombre de Cours par Mois'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Script pour gérer les sous-menus de la sidebar
+        // JavaScript pour gérer les sous-menus
         document.addEventListener("DOMContentLoaded", function () {
             const submenuToggles = document.querySelectorAll(".has-submenu > a");
 
@@ -405,4 +234,4 @@ foreach ($usersDistribution as $user) {
         });
     </script>
 </body>
-</html>
+</html> ona aussi gestion des tage

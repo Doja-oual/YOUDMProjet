@@ -126,12 +126,23 @@ class UserRepository {
     }
     // repartition des user 
     public static function getUsersDistribution() {
-        // Exemple de requête SQL pour récupérer la répartition des utilisateurs
-        $sql = "SELECT role, COUNT(*) AS total 
-                FROM users 
-                GROUP BY role";
-        // Exécuter la requête et retourner les résultats
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $conn = Database::getConnection();
+    
+        // Requête SQL pour récupérer la répartition des utilisateurs par rôle
+        $sql = "SELECT r.nom AS role, COUNT(u.id) AS total 
+                FROM Utilisateur u 
+                JOIN Role r ON u.role_id = r.id 
+                GROUP BY r.nom";
+    
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de la répartition des utilisateurs : " . $e->getMessage());
+            return [];
+        }
     }
     // total teachers 
     public static function getTotalTeachers() {
