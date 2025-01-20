@@ -41,16 +41,11 @@ class Admin extends User {
         return UserRepository::deleteUser($userId);
     }
 
-    public function addCourse($courseData) {
-        return CoursRepository::addCourse($courseData);
-    }
 
-    public function updateCourse($courseId, $courseData) {
-        return CoursRepository::updateCourse($courseId, $courseData);
-    }
+   
 
     public function deleteCourse($courseId) {
-        return CoursRepository::deleteCourse($courseId);
+        return CoursRepository::getAllCourses($courseId);
     }
 
     public function addCategorie($categoryName) {
@@ -101,8 +96,9 @@ class Admin extends User {
     }
 
     public function getAllCourses() {
-        return CoursRepository::getAllCourses();
-    }
+        $courseInstance= new CoursRepository();
+        return $courseInstance->getAllCourses();
+        }
 
     public function getAllCategories() {
         $tagInstance = new Category();

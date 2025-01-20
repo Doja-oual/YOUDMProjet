@@ -22,7 +22,7 @@ $admin = new Admin(
     1 // Statut ID
 );
 
-// Récupérer les statistiques globales
+// Recuperer les statistiques globales
 $totalCourses = CoursRepository::getTotalCourses();
 $totalStudents = UserRepository::getTotalStudents();
 $totalTeachers = UserRepository::getTotalTeachers();
@@ -31,7 +31,7 @@ $totalTeachers = UserRepository::getTotalTeachers();
 $coursesByMonth = CoursRepository::getCoursesByMonth();
 $usersDistribution = UserRepository::getUsersDistribution();
 
-// Préparer les données pour les graphiques
+// Preparer les données pour les graphiques
 $months = [];
 $coursesData = [];
 foreach ($coursesByMonth as $course) {
@@ -117,7 +117,6 @@ foreach ($usersDistribution as $user) {
         </div>
     </header>
 
-    <!-- Sidebar (intégrée du deuxième code) -->
     <div class="sidebar">
         <h3>Youdemy Admin</h3>
         <ul class="sidebar-menu">
@@ -157,7 +156,6 @@ foreach ($usersDistribution as $user) {
                     </li>
                 </ul>
             </li>
-            <!-- Gestion des tags -->
                  <li class="has-submenu">
     <a href="#">
         <i class="fas fa-tags"></i> <span>Gestion des tags</span>
@@ -200,20 +198,12 @@ foreach ($usersDistribution as $user) {
                         </a>
                     </li>
                     <li>
-                        <a href="?page=add_course">
-                            <i class="fas fa-plus-circle"></i> <span>Ajouter un cours</span>
+                        <a href="validation_course.php">
+                            <i class="fas fa-plus-circle"></i> <span>Validation des cours</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="?page=edit_course">
-                            <i class="fas fa-edit"></i> <span>Modifier un cours</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=delete_course">
-                            <i class="fas fa-trash"></i> <span>Supprimer un cours</span>
-                        </a>
-                    </li>
+                   
+                    
                 </ul>
             </li>
 
@@ -235,12 +225,12 @@ foreach ($usersDistribution as $user) {
                         </a>
                     </li>
                     <li>
-                        <a href="?page=edit_category">
+                        <a href="edit_category.php">
                             <i class="fas fa-edit"></i> <span>Modifier une catégorie</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=delete_category">
+                        <a href="delete_category.php">
                             <i class="fas fa-trash"></i> <span>Supprimer une catégorie</span>
                         </a>
                     </li>
