@@ -47,24 +47,23 @@ class Model{
         return $stmt->execute();
     }
 
-  public static function update($table,$id,$data){
-    $conn=Database::getConnection();
-    $fields = "";
-    foreach ($data as $key => $value) {
-        $fields .= "$key = :$key, ";
+    public static function update($table, $id, $data) {
+        $conn = Database::getConnection();
+        $fields = "";
+        foreach ($data as $key => $value) {
+            $fields .= "$key = :$key, ";
+        }
+        $fields = rtrim($fields, ", ");
+        $sql = "UPDATE $table SET $fields WHERE id = :id";
+
+        $stmt = $conn->prepare($sql);
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+        $stmt->bindValue(':id', $id);
+
+        return $stmt->execute();
     }
-    $fields = rtrim($fields, ", ");
-    $sql = "UPDATE $table SET $fields WHERE id = :id";
-
-    $stmt = $conn->prepare($sql);
-    foreach ($data as $key => $value) {
-        $stmt->bindValue(":$key", $value);
-    }
-    $stmt->bindValue(':id', $id);
-
-    return $stmt->execute();
-
-  }
 
   public static function delete($table,$id){
     $conn=Database::getConnection();

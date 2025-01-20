@@ -109,4 +109,9 @@ class Admin extends User {
         $tagInstance = new Tag();
         return $tagInstance->showTag();
     }
+    public function updateTag($tagId, $newTagName) {
+        $tagInstance = new Tag();
+        $data = ['nom' => $newTagName]; 
+        return $tagInstance->updateTags($tagId, $data); 
+}
 }

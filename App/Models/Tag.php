@@ -21,8 +21,8 @@ class Tag extends Model {
         return parent::add($this->table, $data);
     }
 
-    public function updateTag($id, $data) {
-        return parent::update($this->table, $id, $data);
+    public function updateTags($id, $data) {
+        return parent::update($this->table, $id, $data); // Appel de la méthode update du modèle parent
     }
 
     public function deleteTag($id) {
