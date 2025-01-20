@@ -263,6 +263,14 @@ class CoursRepository extends Model {
             error_log("Erreur lors de la récupération des cours avec détails : " . $e->getMessage());
             return false;
         }
+
+    }
+    //methode pour active cours 
+    public static function activerCours($courseId){
+        $conn=Database::getConnection();
+        $sql="UPDATE cours SET statut_id=2 WHERE id=:id ";
+        $stmt = $conn->prepare($sql);
+        return $stmt->execute(['id' => $coursId]);
     }
     
 }
