@@ -60,7 +60,8 @@ class Admin extends User {
    
 
     public function deleteCategory($categoryId) {
-        return CategoryRepository::deleteCategory($categoryId);
+        $tagInstance = new Category();
+        return $tagInstance->deleteCategory($categoryId);
     }
 
     public function addTag($tagName) {

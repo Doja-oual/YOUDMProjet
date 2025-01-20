@@ -25,7 +25,7 @@ class Category extends Model {
         return parent::update($this->table, $id, $data);
     }
 
-    public function deleteCategorie($id) {
+    public function deleteCategory($id) {
         return parent::delete($this->table, $id);
     }
     public function findCategoryById($id) {
