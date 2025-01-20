@@ -266,11 +266,18 @@ class CoursRepository extends Model {
 
     }
     //methode pour active cours 
-    public static function activerCours($courseId){
-        $conn=Database::getConnection();
-        $sql="UPDATE cours SET statut_id=2 WHERE id=:id ";
+    public static function changerStatutCours($coursId) {
+        $conn = Database::getConnection();
+        $sql = "SELECT statut_id FROM cours WHERE id = :id";
         $stmt = $conn->prepare($sql);
-        return $stmt->execute(['id' => $coursId]);
+        $stmt->execute(['id' => $coursId]);
+        $cours = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $nouveauStatut = ($cours['statut_id'] == 2) ? 1 : 2; // 1: Non actif, 2: Actif
+
+        $sql = "UPDATE cours SET statut_id = :statut WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        return $stmt->execute(['id' => $coursId, 'statut' => $nouveauStatut]);
     }
 
     //cours NonActife
@@ -279,11 +286,21 @@ class CoursRepository extends Model {
         $sql = "SELECT c.*, u.nom AS enseignant_nom 
                 FROM cours c 
                 JOIN utilisateur u ON c.enseignant_id = u.id
-                WHERE c.statut_id = 1"; // 1: Non actif
+                WHERE c.statut_id = 2"; 
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
+//cours actif 
+public static function getCoursActifs() {
+    $conn = Database::getConnection();
+    $sql = "SELECT c.*, u.nom AS enseignant_nom 
+            FROM cours c 
+            JOIN utilisateur u ON c.enseignant_id = u.id
+            WHERE c.statut_id = 1"; 
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
     
 }

@@ -94,6 +94,9 @@ class Admin extends User {
     public function getAllUsers() {
         return UserRepository::getAllUsers();
     }
+    public static function UpdateStatutCours($coursId) {
+        return CoursRepository::changerStatutCours($coursId);
+    }
 
     public function getAllCourses() {
         $courseInstance= new CoursRepository();
