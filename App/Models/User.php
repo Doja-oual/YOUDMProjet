@@ -8,12 +8,10 @@ abstract class User {
     const ROLE_ENSEIGNANT = 2;
     const ROLE_ADMIN = 3;
 
-    // Constants for statuses
-    const STATUS_PENDING = 1; // Pending approval
-    const STATUS_ACTIVE = 2;  // Active
-    const STATUS_INACTIVE = 3; // Inactive
+    const STATUS_PENDING = 1; 
+    const STATUS_ACTIVE = 2;  
+    const STATUS_INACTIVE = 3; 
 
-    // Protected properties
     protected $id;
     protected $username;
     protected $email;

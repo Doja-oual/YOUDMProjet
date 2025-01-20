@@ -1,11 +1,12 @@
 <?php
 namespace App\Models;
-require_once '../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 use Config\Database;
 use App\Core\Model;
 
 class Category extends Model {
     protected $table = 'Categorie';
+    protected $conn;
 
     public function __construct() {
         $this->conn = Database::getConnection();
@@ -13,7 +14,7 @@ class Category extends Model {
 
    
     public function showCategorie() {
-        return parent::show($this->table);
+        return parent::all($this->table);
     }
 
     public function addCategorie($data) {

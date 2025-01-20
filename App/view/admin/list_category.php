@@ -1,5 +1,4 @@
 <?php
-session_start(); // Démarrer la session pour stocker des messages temporaires
 require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\Admin;
 use App\Models\User;
@@ -12,20 +11,7 @@ $admin = new Admin(
     User::ROLE_ADMIN 
 );
 
-// Gérer la suppression du tag
-if (isset($_GET['delete_id'])) {
-    $tagId = (int)$_GET['delete_id'];
-    if ($admin->deleteTag($tagId)) {
-        $_SESSION['message'] = "Tag supprimé avec succès.";
-    } else {
-        $_SESSION['message'] = "Erreur lors de la suppression du tag.";
-    }
-    header('Location: delete_tags.php');
-    exit();
-}
-
-// Récupérer tous les tags
-$tags = $admin->getAllTags();
+$categories = $admin->getAllCategories();
 ?>
 
 <!DOCTYPE html>
@@ -33,17 +19,36 @@ $tags = $admin->getAllTags();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supprimer un Tag - Youdemy</title>
+    <title>Liste des Catégories - Youdemy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../../public/assets/css/css.css"> 
+    <link rel="stylesheet" href="../../../public/assets/css/css.css">
+    <style>
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .category-table th, .category-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .category-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .category-table tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <h1>Supprimer un Tag</h1>
+                <h1>Liste des Catégories</h1>
             </div>
             <div class="header-right">
                 <div class="user-profile">
@@ -62,11 +67,14 @@ $tags = $admin->getAllTags();
     <div class="sidebar">
         <h3>Youdemy Admin</h3>
         <ul class="sidebar-menu">
+            <!-- Accueil -->
             <li>
                 <a href="?page=dashboard">
                     <i class="fas fa-home"></i> <span>Accueil</span>
                 </a>
             </li>
+
+            <!-- Gestion des utilisateurs -->
             <li class="has-submenu">
                 <a href="#">
                     <i class="fas fa-users"></i> <span>Gestion des utilisateurs</span>
@@ -95,6 +103,7 @@ $tags = $admin->getAllTags();
                     </li>
                 </ul>
             </li>
+            <!-- Gestion des tags -->
             <li class="has-submenu">
                 <a href="#">
                     <i class="fas fa-tags"></i> <span>Gestion des tags</span>
@@ -123,6 +132,8 @@ $tags = $admin->getAllTags();
                     </li>
                 </ul>
             </li>
+
+            <!-- Gestion des cours -->
             <li class="has-submenu">
                 <a href="#">
                     <i class="fas fa-book"></i> <span>Gestion des cours</span>
@@ -151,6 +162,8 @@ $tags = $admin->getAllTags();
                     </li>
                 </ul>
             </li>
+
+            <!-- Gestion des catégories -->
             <li class="has-submenu">
                 <a href="#">
                     <i class="fas fa-tags"></i> <span>Gestion des catégories</span>
@@ -179,6 +192,8 @@ $tags = $admin->getAllTags();
                     </li>
                 </ul>
             </li>
+
+            <!-- Statistiques -->
             <li>
                 <a href="?page=statistics">
                     <i class="fas fa-chart-line"></i> <span>Statistiques</span>
@@ -190,41 +205,31 @@ $tags = $admin->getAllTags();
     <!-- Contenu principal -->
     <div class="main-content">
         <div class="container mt-4">
-            <h1>Supprimer un Tag</h1>
+            <h1>Liste des Catégories</h1>
+            <a href="add _category.php" class="btn btn-primary mb-3">
+                <i class="fas fa-plus"></i> Ajouter une catégorie
+            </a>
 
-            <!-- Afficher un message de confirmation ou d'erreur -->
-            <?php if (isset($_SESSION['message'])) : ?>
-                <div class="alert alert-info">
-                    <?= $_SESSION['message'] ?>
-                </div>
-                <?php unset($_SESSION['message']); // Supprimer le message apres l'affichage ?>
-            <?php endif; ?>
-
-            <div class="mb-4">
-                <h2>Liste des Tags</h2>
-                <table class="table table-bordered">
+            <?php if (empty($categories)) : ?>
+                <div class="alert alert-info">Aucune catégorie trouvée.</div>
+            <?php else : ?>
+                <table class="category-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nom du Tag</th>
-                            <th>Actions</th>
+                            <th>Nom de la catégorie</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($tags as $t) : ?>
+                        <?php foreach ($categories as $category) : ?>
                             <tr>
-                                <td><?= htmlspecialchars($t['id']) ?></td>
-                                <td><?= htmlspecialchars($t['nom']) ?></td>
-                                <td>
-                                    <a href="delete_tags.php?delete_id=<?= $t['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce tag ?');">
-                                        <i class="fas fa-trash"></i> Supprimer
-                                    </a>
-                                </td>
+                                <td><?= htmlspecialchars($category['id']) ?></td>
+                                <td><?= htmlspecialchars($category['nom']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -244,22 +249,26 @@ $tags = $admin->getAllTags();
         </div>
     </footer>
 
+    <!-- Scripts JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Script pour gérer les sous-menus de la sidebar
         document.addEventListener("DOMContentLoaded", function () {
             const submenuToggles = document.querySelectorAll(".has-submenu > a");
 
             submenuToggles.forEach((toggle) => {
                 toggle.addEventListener("click", function (e) {
-                    e.preventDefault();
+                    e.preventDefault(); // Empêcher le lien de rediriger
                     const parent = this.parentElement;
 
+                    // Fermer tous les autres sous-menus ouverts
                     submenuToggles.forEach((otherToggle) => {
                         if (otherToggle !== toggle) {
                             otherToggle.parentElement.classList.remove("active");
                         }
                     });
 
+                    // Ouvrir/fermer le sous-menu actuel
                     parent.classList.toggle("active");
                 });
             });

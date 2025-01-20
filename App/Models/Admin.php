@@ -4,7 +4,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
-use App\Models\CategoryRepository;
+use App\Models\Category;
 use App\Models\Tag;
 
 class Admin extends User {
@@ -53,9 +53,11 @@ class Admin extends User {
         return CoursRepository::deleteCourse($courseId);
     }
 
-    public function addCategory($categoryName) {
-        return CategoryRepository::addCategory($categoryName);
+    public function addCategorie($categoryName) {
+        $tagInstance = new Category();
+        return $tagInstance->addCategorie(['nom'=>$categoryName]);
     }
+   
 
     public function deleteCategory($categoryId) {
         return CategoryRepository::deleteCategory($categoryId);
@@ -102,7 +104,8 @@ class Admin extends User {
     }
 
     public function getAllCategories() {
-        return CategoryRepository::getAllCategories();
+        $tagInstance = new Category();
+        return $tagInstance->showCategorie();
     }
 
     public function getAllTags() {

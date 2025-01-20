@@ -225,12 +225,12 @@ foreach ($usersDistribution as $user) {
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="?page=list_categories">
+                        <a href="list_category.php">
                             <i class="fas fa-list"></i> <span>Liste des catégories</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=add_category">
+                        <a href="add _category.php">
                             <i class="fas fa-plus-circle"></i> <span>Ajouter une catégorie</span>
                         </a>
                     </li>
