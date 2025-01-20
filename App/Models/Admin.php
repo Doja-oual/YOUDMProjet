@@ -5,7 +5,7 @@ use App\Models\User;
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
 use App\Models\CategoryRepository;
-use App\Models\TagRepository;
+use App\Models\Tag;
 
 class Admin extends User {
 
@@ -62,15 +62,22 @@ class Admin extends User {
     }
 
     public function addTag($tagName) {
-        return TagRepository::addTag($tagName);
+        $tagInstance = new Tag();
+        return $tagInstance->addTag(['name' => $tagName]);
     }
 
     public function deleteTag($tagId) {
-        return TagRepository::deleteTag($tagId);
+        $tagInstance = new Tag();
+        return $tagInstance->deleteTag($tagId);
     }
 
     public function addTagsInBulk($tags) {
-        return TagRepository::addTagsInBulk($tags);
+        $tagInstance = new Tag();
+        $results = [];
+        foreach ($tags as $tagName) {
+            $results[] = $tagInstance->addTag(['name' => $tagName]);
+        }
+        return $results;
     }
 
     public function getGlobalStatistics() {
@@ -83,9 +90,9 @@ class Admin extends User {
     }
 
     public function getPendingTeachers() {
-        // Fetch teachers with the STATUS_PENDING status
         return $this->getUsersByRoleAndStatus(self::ROLE_ENSEIGNANT, self::STATUS_PENDING);
     }
+
     public function getAllUsers() {
         return UserRepository::getAllUsers();
     }
@@ -99,6 +106,7 @@ class Admin extends User {
     }
 
     public function getAllTags() {
-        return TagRepository::getAllTags();
+        $tagInstance = new Tag();
+        return $tagInstance->showTag();
     }
 }

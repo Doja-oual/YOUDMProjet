@@ -98,6 +98,35 @@ if ($students === false) {
                     </li>
                 </ul>
             </li>
+            <!-- Gestion des tags -->
+                 <li class="has-submenu">
+    <a href="#">
+        <i class="fas fa-tags"></i> <span>Gestion des tags</span>
+        <i class="fas fa-chevron-down dropdown-icon"></i>
+    </a>
+    <ul class="submenu">
+        <li>
+            <a href="?page=list_tags">
+                <i class="fas fa-list"></i> <span>Liste des tags</span>
+            </a>
+        </li>
+        <li>
+            <a href="?page=add_tag">
+                <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
+            </a>
+        </li>
+        <li>
+            <a href="?page=edit_tag">
+                <i class="fas fa-edit"></i> <span>Modifier un tag</span>
+            </a>
+        </li>
+        <li>
+            <a href="?page=delete_tag">
+                <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
+            </a>
+        </li>
+    </ul>
+          </li>
 
             <!-- Gestion des cours -->
             <li class="has-submenu">
@@ -107,7 +136,7 @@ if ($students === false) {
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="?page=list_courses">
+                        <a href="list_courses.php">
                             <i class="fas fa-list"></i> <span>Liste des cours</span>
                         </a>
                     </li>
@@ -129,6 +158,36 @@ if ($students === false) {
                 </ul>
             </li>
 
+            <!-- Gestion des catégories -->
+            <li class="has-submenu">
+                <a href="#">
+                    <i class="fas fa-tags"></i> <span>Gestion des catégories</span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="?page=list_categories">
+                            <i class="fas fa-list"></i> <span>Liste des catégories</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=add_category">
+                            <i class="fas fa-plus-circle"></i> <span>Ajouter une catégorie</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=edit_category">
+                            <i class="fas fa-edit"></i> <span>Modifier une catégorie</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=delete_category">
+                            <i class="fas fa-trash"></i> <span>Supprimer une catégorie</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <!-- Statistiques -->
             <li>
                 <a href="?page=statistics">
@@ -136,7 +195,8 @@ if ($students === false) {
                 </a>
             </li>
         </ul>
-    </div>
+</div>
+
 
     <!-- Contenu principal -->
     <div class="main-content">

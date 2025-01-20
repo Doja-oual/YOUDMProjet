@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-require_once '../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 use Config\Database;
 use App\Core\Model;
 
@@ -13,7 +13,7 @@ class Tag extends Model {
 
    
     public function showTag():array {
-        return parent::show($this->table);
+        return parent::all($this->table);
     }
 
     public function addTag($data) {

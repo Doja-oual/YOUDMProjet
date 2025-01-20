@@ -40,7 +40,6 @@ class UserRepository {
             $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
         
             if ($userData && password_verify($password, $userData['mot_de_passe'])) {
-                // Créer une instance de la classe appropriée en fonction du rôle
                 switch ($userData['role_id']) {
                     case User::ROLE_ETUDIANT:
                         return new Student(
@@ -85,17 +84,17 @@ class UserRepository {
                             $userData['statut_id']
                         );
                     default:
-                        return null; // Rôle inconnu
+                        return null; 
                 }
             }
         
-            return null; // Mot de passe incorrect ou utilisateur non trouvé
+            return null; 
         } catch (PDOException $e) {
             error_log("Erreur lors de la connexion : " . $e->getMessage());
             return null;
         }
     }
-    // Vérifier si un e-mail existe
+    // Verifier si un e-mail existe
     public static function emailExists($email) {
         $conn = self::getConnection();
         $sql = "SELECT id FROM Utilisateur WHERE email = :email";
@@ -145,6 +144,30 @@ class UserRepository {
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération des étudiants : " . $e->getMessage());
+            return false;
+        }
+    }
+    // get techers
+    public static function getTeachers() {
+        $conn = self::getConnection();
+        $sql = "
+            SELECT 
+                Utilisateur.id,
+                Utilisateur.nom,
+                Utilisateur.email,
+                Utilisateur.date_inscription,
+                Utilisateur.photo_profil,
+                Utilisateur.statut_id
+            FROM Utilisateur
+            WHERE Utilisateur.role_id = :role_id
+        ";
+        $stmt = $conn->prepare($sql);
+    
+        try {
+            $stmt->execute(['role_id' => User::ROLE_ENSEIGNANT]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des enseignants : " . $e->getMessage());
             return false;
         }
     }
