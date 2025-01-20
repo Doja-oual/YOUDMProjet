@@ -118,4 +118,10 @@ class Admin extends User {
         $data = ['nom' => $newTagName]; 
         return $tagInstance->updateTags($tagId, $data); 
 }
+public function updateCategory($categoryId, $newCategoryName) {
+    $tagInstance = new Category();
+    $data = ['nom' => $newCategoryName]; 
+    return $tagInstance->updateCategorie($categoryId, $data); 
+}
+
 }
