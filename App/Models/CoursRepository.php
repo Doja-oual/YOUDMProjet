@@ -272,5 +272,18 @@ class CoursRepository extends Model {
         $stmt = $conn->prepare($sql);
         return $stmt->execute(['id' => $coursId]);
     }
+
+    //cours NonActife
+    public static function getCoursNonActifs() {
+        $conn = Database::getConnection();
+        $sql = "SELECT c.*, u.nom AS enseignant_nom 
+                FROM cours c 
+                JOIN utilisateur u ON c.enseignant_id = u.id
+                WHERE c.statut_id = 1"; // 1: Non actif
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
     
 }
