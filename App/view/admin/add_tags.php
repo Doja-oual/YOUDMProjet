@@ -3,6 +3,11 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\Admin;
 use App\Models\User;
 
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Instancier la classe Admin
 $admin = new Admin(
     1, // ID de l'admin
@@ -14,15 +19,20 @@ $admin = new Admin(
 
 // Gérer l'ajout d'un tag
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tagName = trim($_POST['tag_name']);
-    if (!empty($tagName)) {
-        if ($admin->addTag($tagName)) {
-            echo "<script>alert('Tag ajouté avec succès.'); window.location.href = 'list_tags.php';</script>";
+    // Vérifier si la clé 'nom' existe dans $_POST
+    if (isset($_POST['nom'])) {
+        $tagName = trim($_POST['nom']);
+        if (!empty($tagName)) {
+            if ($admin->addTag($tagName)) {
+                echo "<script>alert('Tag ajouté avec succès.'); window.location.href = 'list_tags.php';</script>";
+            } else {
+                echo "<script>alert('Erreur lors de l\'ajout du tag.');</script>";
+            }
         } else {
-            echo "<script>alert('Erreur lors de l\'ajout du tag.');</script>";
+            echo "<script>alert('Le nom du tag ne peut pas être vide.');</script>";
         }
     } else {
-        echo "<script>alert('Le nom du tag ne peut pas être vide.');</script>";
+        // echo "<script>alert('Le champ "nom" est manquant.');</script>";
     }
 }
 ?>
@@ -41,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST">
             <div class="mb-3">
                 <label for="tag_name" class="form-label">Nom du tag</label>
-                <input type="text" name="tag_name" class="form-control" required>
+                <input type="text" name="nom" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Ajouter

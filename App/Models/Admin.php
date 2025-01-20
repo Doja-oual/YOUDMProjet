@@ -63,7 +63,7 @@ class Admin extends User {
 
     public function addTag($tagName) {
         $tagInstance = new Tag();
-        return $tagInstance->addTag(['name' => $tagName]);
+        return $tagInstance->addTag(['nom' => $tagName]);
     }
 
     public function deleteTag($tagId) {
@@ -75,7 +75,7 @@ class Admin extends User {
         $tagInstance = new Tag();
         $results = [];
         foreach ($tags as $tagName) {
-            $results[] = $tagInstance->addTag(['name' => $tagName]);
+            $results[] = $tagInstance->addTag(['nom' => $tagName]);
         }
         return $results;
     }
