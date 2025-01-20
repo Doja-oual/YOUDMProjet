@@ -66,7 +66,7 @@ class CoursRepository extends Model {
             return $result['total'];
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération du nombre total de cours : " . $e->getMessage());
-            return 0; // Retourne 0 en cas d'erreur
+            return 0; 
         }}
 
     public function getAllCourses() {

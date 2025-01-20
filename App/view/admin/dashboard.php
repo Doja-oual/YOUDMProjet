@@ -136,7 +136,7 @@ foreach ($usersDistribution as $user) {
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="?page=validate_teachers">
+                        <a href="Valide_teacher.php">
                             <i class="fas fa-check-circle"></i> <span>Valider les enseignants</span>
                         </a>
                     </li>
@@ -146,12 +146,12 @@ foreach ($usersDistribution as $user) {
                         </a>
                     </li>
                     <li>
-                        <a href="?page=list_teachers">
+                        <a href="list_teachers.php">
                             <i class="fas fa-chalkboard-teacher"></i> <span>Liste des enseignants</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=manage_users">
+                        <a href="user_gestion.php">
                             <i class="fas fa-cogs"></i> <span>Gérer les utilisateurs</span>
                         </a>
                     </li>
@@ -165,22 +165,22 @@ foreach ($usersDistribution as $user) {
     </a>
     <ul class="submenu">
         <li>
-            <a href="?page=list_tags">
+            <a href="list_tags.php">
                 <i class="fas fa-list"></i> <span>Liste des tags</span>
             </a>
         </li>
         <li>
-            <a href="?page=add_tag">
+            <a href="add_tags.php">
                 <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
             </a>
         </li>
         <li>
-            <a href="?page=edit_tag">
+            <a href="edit_tags.php">
                 <i class="fas fa-edit"></i> <span>Modifier un tag</span>
             </a>
         </li>
         <li>
-            <a href="?page=delete_tag">
+            <a href="delete_tags.php">
                 <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
             </a>
         </li>
