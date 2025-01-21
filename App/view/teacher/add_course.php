@@ -48,7 +48,7 @@ $teacher = new Teacher(
 
 
 // Vérifier si le formulaire a été soumis
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-course'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Récupérer les données du formulaire
     $courseData = [
         'titre' => $_POST['titre'],
@@ -363,7 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-course'])) {
                 <!-- Boutons de navigation -->
                 <div class="navigation-buttons">
                     <button type="button" class="btn btn-secondary" onclick="prevSlide(2)">Précédent</button>
-                    <button type="submit" name="add-course" class="btn btn-primary">Ajouter le Cours</button>
+                    <button type="submit" class="btn btn-primary">Ajouter le Cours</button>
                 </div>
             </div>
         </form>

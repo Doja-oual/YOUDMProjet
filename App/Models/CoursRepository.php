@@ -346,5 +346,64 @@ public static function getMostPopularCourseByTeacher(int $teacherId): string
     
     return $result['titre'] ?? "Aucun cours trouvé";
 }
+//  grt detaie course pour page home 
+public static function getActiveCoursesWithDetails() {
+    $conn = self::getConnection();
+    $sql = "
+        SELECT 
+            Cours.titre AS cours_titre,
+            Utilisateur.nom AS enseignant_nom,
+            Categorie.nom AS categorie_nom
+        FROM 
+            Cours
+        JOIN 
+            Utilisateur ON Cours.enseignant_id = Utilisateur.id
+        JOIN 
+            Categorie ON Cours.categorie_id = Categorie.id
+        JOIN 
+            Statut ON Cours.statut_id = Statut.id
+        WHERE 
+            Statut.nom = 'Actif';
+    ";
+    $stmt = $conn->prepare($sql);
+
+    try {
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération des cours actifs avec détails : " . $e->getMessage());
+        return false;
+    }
+}
+// course detaie  pou les cours prix=0
+public static function getFreeCoursesWithDetailsGratuit() {
+    $conn = self::getConnection();
+    $sql = "
+        SELECT 
+            Cours.titre AS cours_titre,
+            Utilisateur.nom AS enseignant_nom,
+            Categorie.nom AS categorie_nom,
+            Cours.prix AS prix
+        FROM 
+            Cours
+        JOIN 
+            Utilisateur ON Cours.enseignant_id = Utilisateur.id
+        JOIN 
+            Categorie ON Cours.categorie_id = Categorie.id
+        JOIN 
+            Statut ON Cours.statut_id = Statut.id
+        WHERE 
+            Statut.nom = 'Actif' AND Cours.prix = 0;
+    ";
+    $stmt = $conn->prepare($sql);
+
+    try {
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération des cours gratuits avec détails : " . $e->getMessage());
+        return false;
+    }
+}
     
 }
