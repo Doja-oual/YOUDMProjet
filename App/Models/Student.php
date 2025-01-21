@@ -12,7 +12,7 @@ use App\Models\CertificatRepository;
 
 class Student extends User {
 
-        public function __construct(User $user) {
+        public function __construct(User $user , $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
             parent::__construct(
                 $user->getId(),
                 $user->getUsername(),
@@ -26,6 +26,7 @@ class Student extends User {
                 $user->getLangueId(),
                 $user->getStatutId()
             );
+
         }
     
         

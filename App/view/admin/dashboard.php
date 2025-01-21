@@ -8,19 +8,19 @@ use App\Models\UserRepository;
 use App\Models\CoursRepository;
 
 // Créer une instance de la classe Admin
-$admin = new Admin(
-    1, // ID de l'admin
-    'AdminName', // Nom de l'admin
-    'admin@example.com', // Email de l'admin
-    'hashed_password', // Mot de passe hashé
-    User::ROLE_ADMIN, // Rôle (admin)
-    '2023-01-01', // Date d'inscription
-    'profile.jpg', // Photo de profil
-    'Bio de l\'admin', // Bio
-    'Pays', // Pays
-    1, // Langue ID
-    1 // Statut ID
-);
+// $admin = new Admin(
+//     1, // ID de l'admin
+//     'AdminName', // Nom de l'admin
+//     'admin@example.com', // Email de l'admin
+//     'hashed_password', // Mot de passe hashé
+//     User::ROLE_ADMIN, // Rôle (admin)
+//     '2023-01-01', // Date d'inscription
+//     'profile.jpg', // Photo de profil
+//     'Bio de l\'admin', // Bio
+//     'Pays', // Pays
+//     1, // Langue ID
+//     1 // Statut ID
+// );
 
 // Recuperer les statistiques globales
 $totalCourses = CoursRepository::getTotalCourses();

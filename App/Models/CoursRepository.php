@@ -34,8 +34,8 @@ class CoursRepository extends Model {
         ];
     }
 
-    public function createCourse($data) {
-        return parent::add($this->table,$data);
+    public static function createCourse($data) {
+        return parent::add('Cours',$data);
     }
 
     // recupere les nombre des course par moin
@@ -301,6 +301,50 @@ public static function getCoursActifs() {
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
+// nombre totale de cours cree par un enseinant
+public static function getTotalCoursesByTeacher(int $teacherId): int
+{
+    $query = "SELECT COUNT(*) as total_courses 
+              FROM Cours 
+              WHERE enseignant_id = :teacherId";
+    
+    $stmt = Database::getConnection()->prepare($query);
+    $stmt->execute(['teacherId' => $teacherId]);
+    $result = $stmt->fetch();
+    
+    return (int) $result['total_courses'];
+}
+// nobre total inscrite
+public static function getTotalStudentsByTeacher(int $teacherId): int
+{
+    $query = "SELECT COUNT(DISTINCT etudiant_id) as total_students
+              FROM Inscription
+              WHERE cours_id IN (SELECT id FROM Cours WHERE enseignant_id = :teacherId)";
+    
+    $stmt = Database::getConnection()->prepare($query);
+    $stmt->execute(['teacherId' => $teacherId]);
+    $result = $stmt->fetch();
+    
+    return (int) $result['total_students'];
+}
+// titre de cours plus populaire
+public static function getMostPopularCourseByTeacher(int $teacherId): string
+{
+    $query = "SELECT c.titre
+              FROM Cours c
+              JOIN Inscription i ON c.id = i.cours_id
+              WHERE c.enseignant_id = :teacherId
+              GROUP BY c.id
+              ORDER BY COUNT(i.etudiant_id) DESC
+              LIMIT 1";
+    
+    $stmt = Database::getConnection()->prepare($query);
+    $stmt->execute(['teacherId' => $teacherId]);
+    $result = $stmt->fetch();
+    
+    return $result['titre'] ?? "Aucun cours trouvé";
 }
     
 }

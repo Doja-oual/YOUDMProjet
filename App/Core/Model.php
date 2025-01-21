@@ -35,13 +35,14 @@ class Model{
         }    }
 
     public  static function add($table,$data) {
-        $conn=Database::getConnection();
+        $conn= Database::getConnection();
         echo "<br>";
         $columns = implode(",",array_keys($data));
         $values = ":" . implode(", :", array_keys($data));  
         $sql = "INSERT INTO $table ($columns) VALUES ($values)";
         $stmt = $conn->prepare($sql);
-    
+        // var_dump($sql);
+        // var_dump($data); die;
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value); }
         return $stmt->execute();

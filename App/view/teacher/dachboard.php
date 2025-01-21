@@ -3,6 +3,7 @@ require_once __DIR__. '/../../../vendor/autoload.php';
 
 use App\Models\Teacher;
 use App\Models\CoursRepository;
+use App\Models\User; // Importation de la classe User
 
 // Créer une instance de la classe Teacher (simulée pour l'exemple)
 $teacher = new Teacher(
@@ -10,7 +11,7 @@ $teacher = new Teacher(
     'TeacherName', // Nom de l'enseignant
     'teacher@example.com', // Email de l'enseignant
     'hashed_password', // Mot de passe hashé
-    User::ROLE_TEACHER, // Rôle (enseignant)
+    User::ROLE_ENSEIGNANT, // Rôle (enseignant)
     '2023-01-01', // Date d'inscription
     'profile.jpg', // Photo de profil
     'Bio de l\'enseignant', // Bio
@@ -24,6 +25,9 @@ $totalCourses = CoursRepository::getTotalCoursesByTeacher($teacher->getId());
 $totalStudents = CoursRepository::getTotalStudentsByTeacher($teacher->getId());
 $mostPopularCourse = CoursRepository::getMostPopularCourseByTeacher($teacher->getId());
 
+session_start();
+$userId = $_SESSION["user"]->getId(); 
+// echo $userId; 
 // Récupérer les cours de l'enseignant
 $myCourses = $teacher->getMyCourses();
 ?>
@@ -88,7 +92,7 @@ $myCourses = $teacher->getMyCourses();
             <div class="header-right">
                 <div class="user-profile">
                     <i class="fas fa-user-circle"></i>
-                    <span><?= $teacher->getProfile()['name'] ?></span>
+                    <!-- <span><?= $teacher->getProfile()['name'] ?></span> -->
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>

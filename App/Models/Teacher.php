@@ -5,33 +5,56 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
+use App\Models\Category;
+use App\Models\Tag;
 
 class Teacher extends User
 {
+    public function __construct(
+        int $id,
+        string $username,
+        string $email,
+        string $passwordHash,
+        string $role,
+        ?string $dateInscription ,
+        ?string $photoProfil ,
+        ?string $bio ,
+        ?string $pays ,
+        ?int $langueId ,
+        ?int $statutId 
+    ) {
+        parent::__construct(
+            $id,
+            $username,
+            $email,
+            $passwordHash,
+            $role,
+            $dateInscription,
+            $photoProfil,
+            $bio,
+            $pays,
+            $langueId,
+            $statutId
+        );
+    }
+
+    public function showDashboard(): string
+    {
+        return "Tableau de bord Enseignant";
+    }
+
     public function addCourse(array $courseData): bool
     {
-        if (empty($courseData)) {
-            throw new \InvalidArgumentException("Les données du cours ne peuvent pas être vides.");
-        }
-
-        return CoursRepository::addCourse($courseData);
+        return CoursRepository::createCourse($courseData);
     }
 
     public function updateCourse(int $courseId, array $courseData): bool
     {
-        if ($courseId <= 0) {
-            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
-        }
-
         return CoursRepository::updateCourse($courseId, $courseData);
     }
 
     public function deleteCourse(int $courseId): bool
     {
-        if ($courseId <= 0) {
-            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
-        }
-
         return CoursRepository::deleteCourse($courseId);
     }
 
@@ -42,10 +65,6 @@ class Teacher extends User
 
     public function getCourseStatistics(int $courseId): array
     {
-        if ($courseId <= 0) {
-            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
-        }
-
         return CoursRepository::getCourseStatistics($courseId);
     }
 
@@ -60,10 +79,6 @@ class Teacher extends User
 
     public function updateProfile(array $profileData): bool
     {
-        if (empty($profileData)) {
-            throw new \InvalidArgumentException("Les données du profil ne peuvent pas être vides.");
-        }
-
         return UserRepository::updateUser($this->getId(), $profileData);
     }
 
@@ -71,4 +86,10 @@ class Teacher extends User
     {
         return UserRepository::getUserById($this->getId());
     }
+
+      public function getLangueUser(){
+        return UserRepository::getLangue($this->getId());
+
+
+      }
 }

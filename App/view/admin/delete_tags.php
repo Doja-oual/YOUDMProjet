@@ -1,31 +1,50 @@
 <?php
 session_start(); // Démarrer la session pour stocker des messages temporaires
 require_once __DIR__ . '/../../../vendor/autoload.php';
-use App\Models\Admin;
-use App\Models\User;
+use App\Models\Teacher;
+use App\Models\UserRepository;
 
-$admin = new Admin(
-    1, 
-    'admin_username', 
-    'admin@example.com', 
-    'hashed_password', 
-    User::ROLE_ADMIN 
-);
-
-// Gérer la suppression du tag
-if (isset($_GET['delete_id'])) {
-    $tagId = (int)$_GET['delete_id'];
-    if ($admin->deleteTag($tagId)) {
-        $_SESSION['message'] = "Tag supprimé avec succès.";
-    } else {
-        $_SESSION['message'] = "Erreur lors de la suppression du tag.";
-    }
-    header('Location: delete_tags.php');
+// Vérifier si l'enseignant est connecté
+if (!isset($_SESSION['teacher_id'])) {
+    header('Location: login.php');
     exit();
 }
 
-// Récupérer tous les tags
-$tags = $admin->getAllTags();
+// Récupérer l'ID de l'enseignant connecté depuis la session
+$teacherId = $_SESSION['teacher_id'];
+
+// Récupérer les informations de l'enseignant depuis la base de données
+$teacherData = UserRepository::getUserById($teacherId);
+
+// Créer une instance de la classe Teacher
+$teacher = new Teacher(
+    $teacherId,
+    $teacherData['username'],
+    $teacherData['email'],
+    $teacherData['passwordHash'],
+    $teacherData['role'],
+    $teacherData['dateInscription'],
+    $teacherData['photoProfil'],
+    $teacherData['bio'],
+    $teacherData['pays'],
+    $teacherData['langueId'],
+    $teacherData['statutId']
+);
+
+// Gérer la suppression du cours
+if (isset($_GET['delete_id'])) {
+    $courseId = (int)$_GET['delete_id'];
+    if ($teacher->deleteCourse($courseId)) {
+        $_SESSION['message'] = "Cours supprimé avec succès.";
+    } else {
+        $_SESSION['message'] = "Erreur lors de la suppression du cours.";
+    }
+    header('Location: delete_course.php');
+    exit();
+}
+
+// Récupérer tous les cours de l'enseignant
+$courses = $teacher->getMyCourses();
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +52,7 @@ $tags = $admin->getAllTags();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supprimer un Tag - Youdemy</title>
+    <title>Supprimer un Cours - Youdemy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/css.css"> 
@@ -43,16 +62,16 @@ $tags = $admin->getAllTags();
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <h1>Supprimer un Tag</h1>
+                <h1>Supprimer un Cours</h1>
             </div>
             <div class="header-right">
                 <div class="user-profile">
                     <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
+                    <span><?= htmlspecialchars($teacherData['username']) ?></span>
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    <a href="#">Déconnexion</a>
+                    <a href="logout.php">Déconnexion</a>
                 </button>
             </div>
         </div>
@@ -60,7 +79,7 @@ $tags = $admin->getAllTags();
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h3>Youdemy Admin</h3>
+        <h3>Youdemy Enseignant</h3>
         <ul class="sidebar-menu">
             <li>
                 <a href="?page=dashboard">
@@ -69,119 +88,30 @@ $tags = $admin->getAllTags();
             </li>
             <li class="has-submenu">
                 <a href="#">
-                    <i class="fas fa-users"></i> <span>Gestion des utilisateurs</span>
-                    <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a href="?page=validate_teachers">
-                            <i class="fas fa-check-circle"></i> <span>Valider les enseignants</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="list_students.php">
-                            <i class="fas fa-user-graduate"></i> <span>Liste des étudiants</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=list_teachers">
-                            <i class="fas fa-chalkboard-teacher"></i> <span>Liste des enseignants</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=manage_users">
-                            <i class="fas fa-cogs"></i> <span>Gérer les utilisateurs</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#">
-                    <i class="fas fa-tags"></i> <span>Gestion des tags</span>
-                    <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a href="?page=list_tags">
-                            <i class="fas fa-list"></i> <span>Liste des tags</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=add_tag">
-                            <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=edit_tag">
-                            <i class="fas fa-edit"></i> <span>Modifier un tag</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=delete_tag">
-                            <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#">
                     <i class="fas fa-book"></i> <span>Gestion des cours</span>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="list_courses.php">
-                            <i class="fas fa-list"></i> <span>Liste des cours</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=add_course">
+                        <a href="add_course.php">
                             <i class="fas fa-plus-circle"></i> <span>Ajouter un cours</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=edit_course">
-                            <i class="fas fa-edit"></i> <span>Modifier un cours</span>
+                        <a href="my_courses.php">
+                            <i class="fas fa-list"></i> <span>Mes cours</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=delete_course">
+                        <a href="delete_course.php">
                             <i class="fas fa-trash"></i> <span>Supprimer un cours</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li class="has-submenu">
-                <a href="#">
-                    <i class="fas fa-tags"></i> <span>Gestion des catégories</span>
-                    <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a href="?page=list_categories">
-                            <i class="fas fa-list"></i> <span>Liste des catégories</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=add_category">
-                            <i class="fas fa-plus-circle"></i> <span>Ajouter une catégorie</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=edit_category">
-                            <i class="fas fa-edit"></i> <span>Modifier une catégorie</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=delete_category">
-                            <i class="fas fa-trash"></i> <span>Supprimer une catégorie</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
             <li>
-                <a href="?page=statistics">
-                    <i class="fas fa-chart-line"></i> <span>Statistiques</span>
+                <a href="update_profile.php">
+                    <i class="fas fa-user-edit"></i> <span>Mettre à jour le profil</span>
                 </a>
             </li>
         </ul>
@@ -190,33 +120,35 @@ $tags = $admin->getAllTags();
     <!-- Contenu principal -->
     <div class="main-content">
         <div class="container mt-4">
-            <h1>Supprimer un Tag</h1>
+            <h1>Supprimer un Cours</h1>
 
             <!-- Afficher un message de confirmation ou d'erreur -->
             <?php if (isset($_SESSION['message'])) : ?>
                 <div class="alert alert-info">
                     <?= $_SESSION['message'] ?>
                 </div>
-                <?php unset($_SESSION['message']); // Supprimer le message apres l'affichage ?>
+                <?php unset($_SESSION['message']); // Supprimer le message après l'affichage ?>
             <?php endif; ?>
 
             <div class="mb-4">
-                <h2>Liste des Tags</h2>
+                <h2>Liste des Cours</h2>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nom du Tag</th>
+                            <th>Titre</th>
+                            <th>Description</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($tags as $t) : ?>
+                        <?php foreach ($courses as $course) : ?>
                             <tr>
-                                <td><?= htmlspecialchars($t['id']) ?></td>
-                                <td><?= htmlspecialchars($t['nom']) ?></td>
+                                <td><?= htmlspecialchars($course['id']) ?></td>
+                                <td><?= htmlspecialchars($course['titre']) ?></td>
+                                <td><?= htmlspecialchars($course['description']) ?></td>
                                 <td>
-                                    <a href="delete_tags.php?delete_id=<?= $t['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce tag ?');">
+                                    <a href="delete_course.php?delete_id=<?= $course['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours ?');">
                                         <i class="fas fa-trash"></i> Supprimer
                                     </a>
                                 </td>

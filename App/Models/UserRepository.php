@@ -32,56 +32,60 @@ class UserRepository {
     // Connexion d'un utilisateur
     public static function login($email, $password) {
         $conn = self::getConnection();
-        $sql = "SELECT * FROM Utilisateur WHERE email = :email";
-        
+        $sql = "SELECT * FROM Utilisateur WHERE email LIKE :email";
         try {
             $stmt = $conn->prepare($sql);
             $stmt->execute(['email' => $email]);
-            $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
-            if ($userData && password_verify($password, $userData['mot_de_passe'])) {
-                switch ($userData['role_id']) {
+            $userData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            // echo "<pre>";
+            // var_dump($userData); 
+            // echo "</pre>";
+            // die;
+            if ($userData && password_verify($password, $userData[0]['mot_de_passe'])) {
+                switch ($userData[0]['role_id']) {
                     case User::ROLE_ETUDIANT:
                         return new Student(
-                            $userData['id'],
-                            $userData['nom'],
-                            $userData['email'],
-                            $userData['mot_de_passe'],
-                            $userData['role_id'],
-                            $userData['date_inscription'],
-                            $userData['photo_profil'],
-                            $userData['bio'],
-                            $userData['pays'],
-                            $userData['langue_id'],
-                            $userData['statut_id']
+                            $userData[0]['id'],
+                            $userData[0]['nom'],
+                            $userData[0]['email'],
+                            $userData[0]['mot_de_passe'],
+                            $userData[0]['role_id'],
+                            $userData[0]['date_inscription'],
+                            $userData[0]['photo_profil'],
+                            $userData[0]['bio'],
+                            $userData[0]['pays'],
+                            $userData[0]['langue_id'],
+                            $userData[0]['statut_id']
                         );
+                        // var_dump($student);
+                        return $student;
                     case User::ROLE_ENSEIGNANT:
                         return new Teacher(
-                            $userData['id'],
-                            $userData['nom'],
-                            $userData['email'],
-                            $userData['mot_de_passe'],
-                            $userData['role_id'],
-                            $userData['date_inscription'],
-                            $userData['photo_profil'],
-                            $userData['bio'],
-                            $userData['pays'],
-                            $userData['langue_id'],
-                            $userData['statut_id']
+                            $userData[0]['id'],
+                            $userData[0]['nom'],
+                            $userData[0]['email'],
+                            $userData[0]['mot_de_passe'],
+                            $userData[0]['role_id'],
+                            $userData[0]['date_inscription'],
+                            $userData[0]['photo_profil'],
+                            $userData[0]['bio'],
+                            $userData[0]['pays'],
+                            $userData[0]['langue_id'],
+                            $userData[0]['statut_id']
                         );
                     case User::ROLE_ADMIN:
                         return new Admin(
-                            $userData['id'],
-                            $userData['nom'],
-                            $userData['email'],
-                            $userData['mot_de_passe'],
-                            $userData['role_id'],
-                            $userData['date_inscription'],
-                            $userData['photo_profil'],
-                            $userData['bio'],
-                            $userData['pays'],
-                            $userData['langue_id'],
-                            $userData['statut_id']
+                            $userData[0]['id'],
+                            $userData[0]['nom'],
+                            $userData[0]['email'],
+                            $userData[0]['mot_de_passe'],
+                            $userData[0]['role_id'],
+                            $userData[0]['date_inscription'],
+                            $userData[0]['photo_profil'],
+                            $userData[0]['bio'],
+                            $userData[0]['pays'],
+                            $userData[0]['langue_id'],
+                            $userData[0]['statut_id']
                         );
                     default:
                         return null; 
@@ -423,4 +427,19 @@ class UserRepository {
         }
     }
 
+    //methode de get les langage 
+    public static function getLangue() {
+        $conn = self::getConnection();
+        $sql = "SELECT * FROM Langue";
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de la langue : " . $e->getMessage());
+            return false;
+        }
+
+}
 }

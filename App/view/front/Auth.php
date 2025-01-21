@@ -6,11 +6,19 @@ use App\Models\UserRepository;
 use App\Models\User;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if(isset($_POST['register'])) {
+        $username = $_POST['nom'];
+        $email = $_POST['email'];
+        $password = $_POST['mot_de_passe'];
+        $role = $_POST['role'];
+        UserRepository::register($username, $email, $password, $role);
+    }
+
     if (isset($_POST['login'])) {
         $email = htmlspecialchars($_POST['email']);
         $password = $_POST['mot_de_passe'];
         $user = UserRepository::login($email, $password); 
-
         if ($user) {
             $_SESSION['user'] = $user; // Stocker l'objet dans la session
             // Rediriger en fonction du rôle
@@ -19,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: ../admin/dashboard.php');
                     break;
                 case User::ROLE_ENSEIGNANT: 
-                    header('Location: ../teacher/teacher.php');
+                    header('Location: ../teacher/dachboard.php');
                     break;
                 case User::ROLE_ETUDIANT: 
                     header('Location: ../student/student.php');

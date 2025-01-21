@@ -12,7 +12,7 @@ abstract class User {
     const STATUS_ACTIVE = 2;  
     const STATUS_INACTIVE = 3; 
 
-    protected $id;
+    protected  $id;
     protected $username;
     protected $email;
     protected $passwordHash;
@@ -25,7 +25,7 @@ abstract class User {
     protected $statutId;
 
     // Constructor
-    public function __construct($id, $username, $email, $passwordHash, $role, $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
+    public function __construct( $id, $username, $email, $passwordHash, $role, $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
         $this->id = $id;
         $this->username = $username;
         $this->email = $email;
