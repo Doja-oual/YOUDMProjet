@@ -405,5 +405,41 @@ public static function getFreeCoursesWithDetailsGratuit() {
         return false;
     }
 }
+
+//methode recherche 
+public static function searchCourses($keyword) {
+    $conn = self::getConnection();
+
+    // Préparer la requête SQL pour rechercher dans le titre, la description et le contenu
+    $sql = "
+        SELECT 
+            Cours.*,
+            Utilisateur.nom AS enseignant_nom,
+            Categorie.nom AS categorie_nom
+        FROM 
+            Cours
+        JOIN 
+            Utilisateur ON Cours.enseignant_id = Utilisateur.id
+        JOIN 
+            Categorie ON Cours.categorie_id = Categorie.id
+        WHERE 
+            Cours.titre LIKE :keyword OR
+            Cours.description LIKE :keyword OR
+            Cours.contenu LIKE :keyword
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    // Ajouter des wildcards (%) pour rechercher partiellement
+    $keyword = "%$keyword%";
+
+    try {
+        $stmt->execute(['keyword' => $keyword]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\PDOException $e) {
+        error_log("Erreur lors de la recherche de cours : " . $e->getMessage());
+        return [];
+    }
+}
     
 }

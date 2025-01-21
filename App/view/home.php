@@ -90,6 +90,7 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             color: var(--light-text-color);
             outline: none;
             margin-left: 10px;
+            width: 200px;
         }
 
         header .search-bar input::placeholder {
@@ -159,74 +160,10 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        /* Section des rôles professionnels */
-        .roles-section {
-            padding: 60px 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text-color);
-        }
-
-        .roles-section h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 40px;
-            text-align: center;
-            color: var(--light-text-color);
-        }
-
-        .roles-section .card {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .roles-section .card:hover {
-            transform: translateY(-10px);
-        }
-
-        .roles-section .card img {
-            border-radius: 15px 15px 0 0;
-        }
-
-        .roles-section .card-body {
-            padding: 20px;
-        }
-
-        .roles-section .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--light-text-color);
-        }
-
-        .roles-section .card-text {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .roles-section .btn-primary {
-            background: var(--light-text-color);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .roles-section .btn-primary:hover {
-            background: var(--secondary-color);
-            color: var(--light-text-color);
-        }
-
         /* Section des cours gratuits */
         .free-courses-section {
             padding: 60px 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text-color);
+            background: var(--background-color);
         }
 
         .free-courses-section h2 {
@@ -234,14 +171,14 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             font-weight: 700;
             margin-bottom: 40px;
             text-align: center;
-            color: var(--light-text-color);
+            color: var(--text-color);
         }
 
         .free-courses-section .card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--light-text-color);
             border: none;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
             margin-bottom: 20px;
         }
@@ -262,17 +199,17 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: var(--light-text-color);
+            color: var(--text-color);
         }
 
         .free-courses-section .card-text {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: #666;
         }
 
         .free-courses-section .btn-primary {
-            background: var(--light-text-color);
-            color: var(--primary-color);
+            background: var(--primary-color);
+            color: var(--light-text-color);
             border: none;
             border-radius: 25px;
             padding: 10px 20px;
@@ -282,60 +219,54 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
 
         .free-courses-section .btn-primary:hover {
             background: var(--secondary-color);
-            color: var(--light-text-color);
         }
 
-        /* Section des nouveautés */
-        .new-section {
+        /* Section des cours actifs */
+        .active-courses-section {
             padding: 60px 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text-color);
+            background: var(--background-color);
         }
 
-        .new-section h2 {
+        .active-courses-section h2 {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 40px;
             text-align: center;
-            color: var(--light-text-color);
+            color: var(--text-color);
         }
 
-        .new-section .card {
-            background: rgba(255, 255, 255, 0.1);
+        .active-courses-section .card {
+            background: var(--light-text-color);
             border: none;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
             margin-bottom: 20px;
         }
 
-        .new-section .card:hover {
+        .active-courses-section .card:hover {
             transform: translateY(-10px);
         }
 
-        .new-section .card img {
-            border-radius: 15px 15px 0 0;
-        }
-
-        .new-section .card-body {
+        .active-courses-section .card-body {
             padding: 20px;
         }
 
-        .new-section .card-title {
+        .active-courses-section .card-title {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: var(--light-text-color);
+            color: var(--text-color);
         }
 
-        .new-section .card-text {
+        .active-courses-section .card-text {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: #666;
         }
 
-        .new-section .btn-primary {
-            background: var(--light-text-color);
-            color: var(--primary-color);
+        .active-courses-section .btn-primary {
+            background: var(--primary-color);
+            color: var(--light-text-color);
             border: none;
             border-radius: 25px;
             padding: 10px 20px;
@@ -343,9 +274,8 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             transition: all 0.3s ease;
         }
 
-        .new-section .btn-primary:hover {
+        .active-courses-section .btn-primary:hover {
             background: var(--secondary-color);
-            color: var(--light-text-color);
         }
 
         /* Pied de page */
@@ -390,7 +320,7 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                 width: 100%;
             }
         }
-    </style>    
+    </style>
 </head>
 <body>
     <!-- En-tête -->
@@ -405,7 +335,10 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                     <!-- Barre de recherche -->
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Rechercher des cours...">
+                        <form action="searchresult.php" method="GET">
+                            <input type="text" name="keyword" placeholder="Rechercher des cours...">
+                            <button type="submit" class="btn btn-primary">Rechercher</button>
+                        </form>
                     </div>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
