@@ -370,6 +370,8 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                 <h1>Nouvelle année. De grands objectifs. Des économies plus importantes.</h1>
                 <p>Atteignez vos objectifs professionnels grâce à un accès illimité d'un an à plus de 1000 programmes d'apprentissage de Google, Microsoft, IBM et bien d'autres encore, avec une réduction de 65%.</p>
                 <a href="#" class="btn btn-primary">Économiser</a>
+                <a href="catalogue.php" class="btn btn-secondary">Voir le catalogue complet</a>
+
             </div>
             <!-- Image -->
             <div class="image-content">

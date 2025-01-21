@@ -11,8 +11,11 @@ use App\Models\CertificatRepository;
 
 
 class Student extends User {
+    public function __construct() {
+        $args = func_get_args();
 
-        public function __construct(User $user , $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
+        if (count($args) === 1 && ($args[0] instanceof User || $args[0] instanceof Student)) {
+            $user = $args[0];
             parent::__construct(
                 $user->getId(),
                 $user->getUsername(),
@@ -26,8 +29,26 @@ class Student extends User {
                 $user->getLangueId(),
                 $user->getStatutId()
             );
-
         }
+        else if (count($args) >= 6) {
+            parent::__construct(
+                $args[0],  // id
+                $args[1],  // username
+                $args[2],  // email
+                $args[3],  // passwordHash
+                $args[4],  // role
+                $args[5],  // dateInscription
+                $args[6] ?? null,  // photoProfil
+                $args[7] ?? null,  // bio
+                $args[8] ?? null,  // pays
+                $args[9] ?? null,  // langueId
+                $args[10] ?? null  // statutId
+            );
+        } 
+        else {
+            return null;
+        }
+    }
     
         
     

@@ -442,4 +442,37 @@ public static function searchCourses($keyword) {
     }
 }
     
+
+
+//  les cours paginés
+
+public static function getCoursesWithPagination($page = 1, $perPage = 6) {
+    $conn = self::getConnection();
+    $offset = ($page - 1) * $perPage;
+
+    $sql = "
+        SELECT 
+            Cours.*,
+            Utilisateur.nom AS enseignant_nom,
+            Categorie.nom AS categorie_nom
+        FROM Cours
+        LEFT JOIN Utilisateur ON Cours.enseignant_id = Utilisateur.id
+        LEFT JOIN Categorie ON Cours.categorie_id = Categorie.id
+        LIMIT :limit OFFSET :offset
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+//totale cours
+public static function countAllCourses() {
+    $conn = self::getConnection();
+    $sql = "SELECT COUNT(*) as total FROM Cours";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    return (int) $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+}
 }
