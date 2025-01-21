@@ -1,40 +1,74 @@
-
 <?php
-class Teacher extends User {
 
-public function addCourse($courseData) {
-    return CoursRepository::addCourse($courseData);
-}
+namespace App\Models;
 
-public function updateCourse($courseId, $courseData) {
-    return CoursRepository::updateCourse($courseId, $courseData);
-}
+use App\Models\User;
+use App\Models\UserRepository;
+use App\Models\CoursRepository;
 
-public function deleteCourse($courseId) {
-    return CoursRepository::deleteCourse($courseId);
-}
+class Teacher extends User
+{
+    public function addCourse(array $courseData): bool
+    {
+        if (empty($courseData)) {
+            throw new \InvalidArgumentException("Les données du cours ne peuvent pas être vides.");
+        }
 
-public function getMyCourses() {
-    return CoursRepository::getCoursesByTeacher($this->getId());
-}
+        return CoursRepository::addCourse($courseData);
+    }
 
-public function getCourseStatistics($courseId) {
-    return CoursRepository::getCourseStatistics($courseId);
-}
+    public function updateCourse(int $courseId, array $courseData): bool
+    {
+        if ($courseId <= 0) {
+            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
+        }
 
-public function getTeacherStatistics() {
-    return [
-        'total_courses' => CoursRepository::getTotalCoursesByTeacher($this->getId()),
-        'total_students' => CoursRepository::getTotalStudentsByTeacher($this->getId()),
-        'most_popular_course' => CoursRepository::getMostPopularCourseByTeacher($this->getId())
-    ];
-}
+        return CoursRepository::updateCourse($courseId, $courseData);
+    }
 
-public function updateProfile($profileData) {
-    return UserRepository::updateUser($this->getId(), $profileData);
-}
+    public function deleteCourse(int $courseId): bool
+    {
+        if ($courseId <= 0) {
+            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
+        }
 
-public function getProfile() {
-    return UserRepository::getUserById($this->getId());
-}
+        return CoursRepository::deleteCourse($courseId);
+    }
+
+    public function getMyCourses(): array
+    {
+        return CoursRepository::getCoursesByTeacher($this->getId());
+    }
+
+    public function getCourseStatistics(int $courseId): array
+    {
+        if ($courseId <= 0) {
+            throw new \InvalidArgumentException("L'ID du cours doit être un entier positif.");
+        }
+
+        return CoursRepository::getCourseStatistics($courseId);
+    }
+
+    public function getTeacherStatistics(): array
+    {
+        return [
+            'total_courses' => CoursRepository::getTotalCoursesByTeacher($this->getId()),
+            'total_students' => CoursRepository::getTotalStudentsByTeacher($this->getId()),
+            'most_popular_course' => CoursRepository::getMostPopularCourseByTeacher($this->getId())
+        ];
+    }
+
+    public function updateProfile(array $profileData): bool
+    {
+        if (empty($profileData)) {
+            throw new \InvalidArgumentException("Les données du profil ne peuvent pas être vides.");
+        }
+
+        return UserRepository::updateUser($this->getId(), $profileData);
+    }
+
+    public function getProfile(): array
+    {
+        return UserRepository::getUserById($this->getId());
+    }
 }
