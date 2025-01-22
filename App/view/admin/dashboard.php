@@ -111,7 +111,7 @@ foreach ($usersDistribution as $user) {
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    <a href="#">Déconnexion</a>
+                    <a href="../front/logout.php">Déconnexion</a>
                 </button>
             </div>
         </div>

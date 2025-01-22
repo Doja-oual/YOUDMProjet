@@ -30,7 +30,7 @@ class Model{
             // $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute([':id' => $id]);
             $result =  $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            var_dump($result);
+            return $result;
         } catch (\PDOException $e) {
             echo "Erreur SQL: " . $e->getMessage();
             return null;
@@ -47,7 +47,8 @@ class Model{
         // var_dump($data); die;
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value); }
-        return $stmt->execute();
+        $stmt->execute();
+        return $conn->lastInsertId();
     }
 
     public static function update($table, $id, $data) {

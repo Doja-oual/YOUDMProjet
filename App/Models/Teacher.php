@@ -43,14 +43,14 @@ class Teacher extends User
         return "Tableau de bord Enseignant";
     }
 
-    public function addCourse(array $courseData): bool
+    public function addCourse(array $courseData, $tags): bool
     {
-        return CoursRepository::createCourse($courseData);
+        return CoursRepository::createCourse($courseData, $tags);
     }
 
-    public function updateCourse(int $courseId, array $courseData): bool
+    public function updateCourse(int $courseId, array $courseData, array $tags): bool
     {
-        return CoursRepository::updateCourse($courseId, $courseData);
+        return CoursRepository::updateCourse($courseId, $courseData, $tags);
     }
 
     public function deleteCourse(int $courseId): bool

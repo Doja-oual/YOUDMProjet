@@ -2,10 +2,36 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\Admin;
 use App\Models\User;
+use App\Models\UserRepository;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+
+session_start();
+$adminId = $_SESSION["userId"];
+$adminData = $_SESSION["user"]->getId(); 
+
+
+// Récupérer les informations de l'enseignant depuis la base de données
+$adminData = UserRepository::getUserById($adminData);
+
+// Créer une instance de la classe Teacher
+$admin = new Admin(
+    $adminId,
+    $adminData['nom'],
+    $adminData['email'],
+    $adminData['mot_de_passe'],
+    $adminData['role_id'],
+    $adminData['date_inscription'],
+    $adminData['photo_profil'],
+    $adminData['bio'],
+    $adminData['pays'],
+    $adminData['langue_id'],
+    $adminData['statut_id']
+);
+
 
 // Instancier la classe Admin
 $admin = new Admin(

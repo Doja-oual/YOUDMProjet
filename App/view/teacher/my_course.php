@@ -1,10 +1,7 @@
 <?php
-// Inclure l'autoloader de Composer pour charger les classes
 require_once __DIR__ . '/../../../vendor/autoload.php';
-
-// Importer les classes nécessaires
 use App\Models\Teacher;
-use App\Models\UserRepository;
+use App\Models\CoursRepository;
 
 // Démarrer la session pour accéder aux données de l'utilisateur connecté
 session_start();
@@ -12,33 +9,35 @@ session_start();
 // Vérifier si l'enseignant est connecté
 if (!isset($_SESSION['user'])) {
     // Rediriger vers la page de connexion si l'enseignant n'est pas connecté
-    header('Location: login.php');
+    header('Location: ../front/Auth.php');
     exit();
 }
 
+
 // Récupérer l'ID de l'enseignant connecté depuis la session
-$teacherId = $_SESSION['userId'];
+$teacherId = $_SESSION["user"]->getId();
 
-// Récupérer les informations de l'enseignant depuis la base de données
-$teacherData = UserRepository::getUserById($teacherId);
-
-// Créer une instance de la classe Teacher
 $teacher = new Teacher(
     $teacherId,
-    $teacherData['nom'],
-    $teacherData['email'],
-    $teacherData['mot_de_passe'],
-    $teacherData['role_id'],
-    $teacherData['date_inscription'],
-    $teacherData['photo_profil'],
-    $teacherData['bio'],
-    $teacherData['pays'],
-    $teacherData['langue_id'],
-    $teacherData['statut_id']
+    $_SESSION["user"]->getUsername(),
+    $_SESSION["user"]->getEmail(),
+    $_SESSION["user"]->getPasswordHash(),
+    $_SESSION["user"]->getRole(),
+    $_SESSION["user"]->getDateInscription(),
+    $_SESSION["user"]->getPhotoProfil(),
+    $_SESSION["user"]->getBio(),
+    $_SESSION["user"]->getPays(),
+    $_SESSION["user"]->getLangueId(),
+    $_SESSION["user"]->getStatutId()
 );
+// Récupérer les cours de l'enseignant
+$courseRepository = new CoursRepository();
+$courses = $courseRepository->getCoursesByTeacherId($teacherId);
 
-// Récupérer les statistiques de l'enseignant
-$teacherStatistics = $teacher->getTeacherStatistics();
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-course'])) {
+    $courseId = $_POST['courseId'];
+    $teacher->deleteCourse($courseId);
+}
 ?>
 
 <!DOCTYPE html>
@@ -46,184 +45,68 @@ $teacherStatistics = $teacher->getTeacherStatistics();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques Enseignant</title>
-    <!-- Lien vers Bootstrap CSS -->
+    <title>Mes Cours</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Lien vers Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Styles personnalisés -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #2F80ED, #F2994A);
             font-family: 'Poppins', sans-serif;
-        }
-
-        .chart-container {
-            background: #ffffff;
-            border-radius: 10px;
             padding: 20px;
-            margin: 20px auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
         }
 
-        h1, h2 {
-            text-align: center;
-            color: #343a40;
+        .course-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .course-card h3 {
+            color: #2F80ED;
+            font-weight: 700;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #2F80ED, #F2994A);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(47, 128, 237, 0.4);
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Statistiques Enseignant</h1>
-
-        <!-- Graphique 1 : Nombre total de cours -->
-        <div class="chart-container">
-            <h2>Nombre total de cours</h2>
-            <canvas id="totalCoursesChart"></canvas>
-        </div>
-
-        <!-- Graphique 2 : Nombre total d'étudiants -->
-        <div class="chart-container">
-            <h2>Nombre total d'étudiants</h2>
-            <canvas id="totalStudentsChart"></canvas>
-        </div>
-
-        <!-- Graphique 3 : Cours le plus populaire -->
-        <div class="chart-container">
-            <h2>Cours le plus populaire</h2>
-            <canvas id="mostPopularCourseChart"></canvas>
-        </div>
+    <div class="container">
+        <h1 class="text-center mb-4">Mes Cours</h1>
+        <?php if (empty($courses)) : ?>
+            <div class="alert alert-info">Vous n'avez pas encore créé de cours.</div>
+        <?php else : ?>
+            <?php foreach ($courses as $course) : ?>
+                <div class="course-card">
+                    <h3><?= htmlspecialchars($course['titre']) ?></h3>
+                    <p><?= htmlspecialchars($course['description']) ?></p>
+                    <p><strong>Niveau :</strong> <?= htmlspecialchars($course['niveau']) ?></p>
+                    <p><strong>Durée :</strong> <?= htmlspecialchars($course['duree']) ?> minutes</p>
+                    <p><strong>Prix :</strong> <?= htmlspecialchars($course['prix']) ?> €</p>
+                    <form action="" method="post">
+                        <a href="edit_course.php?id=<?= $course['id'] ?>" class="btn btn-edit">Modifier</a>
+                        <input type="hidden" name="courseId" value="<?= $course['id'] ?>">
+                        <button class="btn btn-edit" type="submit" name="delete-course">Delete</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
-    <!-- Script pour initialiser les graphiques -->
-    <script>
-        // Données pour le graphique "Nombre total de cours"
-        const totalCoursesData = {
-            labels: ['Cours'],
-            datasets: [{
-                label: 'Nombre total de cours',
-                data: [<?= $teacherStatistics['total_courses'] ?>],
-                backgroundColor: ['#2F80ED'],
-                borderColor: ['#2F80ED'],
-                borderWidth: 1
-            }]
-        };
-
-        // Configuration du graphique "Nombre total de cours"
-        const totalCoursesConfig = {
-            type: 'bar',
-            data: totalCoursesData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Nombre total de cours'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        // Initialisation du graphique "Nombre total de cours"
-        const totalCoursesChart = new Chart(
-            document.getElementById('totalCoursesChart'),
-            totalCoursesConfig
-        );
-
-        // Données pour le graphique "Nombre total d'étudiants"
-        const totalStudentsData = {
-            labels: ['Étudiants'],
-            datasets: [{
-                label: 'Nombre total d\'étudiants',
-                data: [<?= $teacherStatistics['total_students'] ?>],
-                backgroundColor: ['#F2994A'],
-                borderColor: ['#F2994A'],
-                borderWidth: 1
-            }]
-        };
-
-        // Configuration du graphique "Nombre total d'étudiants"
-        const totalStudentsConfig = {
-            type: 'bar',
-            data: totalStudentsData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Nombre total d\'étudiants'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        // Initialisation du graphique "Nombre total d'étudiants"
-        const totalStudentsChart = new Chart(
-            document.getElementById('totalStudentsChart'),
-            totalStudentsConfig
-        );
-
-        // Données pour le graphique "Cours le plus populaire"
-        const mostPopularCourseData = {
-            labels: ['Cours le plus populaire'],
-            datasets: [{
-                label: 'Cours le plus populaire',
-                data: [1], // Valeur statique pour représenter le cours le plus populaire
-                backgroundColor: ['#6FCF97'],
-                borderColor: ['#6FCF97'],
-                borderWidth: 1
-            }]
-        };
-
-        // Configuration du graphique "Cours le plus populaire"
-        const mostPopularCourseConfig = {
-            type: 'bar',
-            data: mostPopularCourseData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Cours le plus populaire : <?= $teacherStatistics['most_popular_course'] ?>'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        // Initialisation du graphique "Cours le plus populaire"
-        const mostPopularCourseChart = new Chart(
-            document.getElementById('mostPopularCourseChart'),
-            mostPopularCourseConfig
-        );
-    </script>
-
-    <!-- Lien vers Bootstrap JS et dépendances -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

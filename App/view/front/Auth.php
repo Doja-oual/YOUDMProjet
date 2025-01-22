@@ -5,9 +5,18 @@ require_once __DIR__ . '/../../../vendor/autoload.php'; // Charger l'autoloader
 use App\Models\UserRepository;
 use App\Models\User;
 
-// if(isset($_SESSION['user'])) {
-//     header("Location: ../home.php");
-// }
+if(isset($_SESSION['user'])) {
+    $role = $_SESSION['role'];
+    if($role === 3) {
+        header("Location: ../admin/dashboard.php");
+    }
+    else if($role === 2) {
+        header("Location: ../teacher/my_courses.php");
+    } 
+    else if($role === 1) {
+        header("Location: ../teacher/my_courses.php");
+    } 
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -28,17 +37,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['login'])) {
         $email = htmlspecialchars($_POST['email']);
         $password = $_POST['mot_de_passe'];
-        $user = UserRepository::login($email, $password); 
+        $user = UserRepository::login($email, $password);
+
         if ($user) {
             $_SESSION['user'] = $user; // Stocker l'objet dans la session
             $_SESSION['userId'] = $user->getId();
+            $_SESSION['role'] = $user->getRole();
             // Rediriger en fonction du rôle
             switch ($user->getRole()) {
                 case User::ROLE_ADMIN: 
                     header('Location: ../admin/dashboard.php');
                     break;
                 case User::ROLE_ENSEIGNANT: 
-                    header('Location: ../teacher/add_course.php');
+                    if($user->getStatutId() === 1) {
+                        header('Location: ../teacher/add_course.php');
+                    } else {
+                        header('Location: ../home.php');
+                    }
                     break;
                 case User::ROLE_ETUDIANT: 
                     header('Location: ../student/student.php');

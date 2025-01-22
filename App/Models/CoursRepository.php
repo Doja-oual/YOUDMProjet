@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Core\Model;
 use Config\Database;
+use App\Models\Tag;
 
 class CoursRepository extends Model {
     public static function getConnection(){
@@ -34,8 +35,12 @@ class CoursRepository extends Model {
         ];
     }
 
-    public static function createCourse($data) {
-        return parent::add('Cours',$data);
+    public static function createCourse($data, $tags) {
+        $lastId = parent::add('Cours',$data);
+        foreach($tags as $tag) {
+            self::addTagToCours($lastId, $tag);
+        }
+        return true;
     }
 
     // recupere les nombre des course par moin
@@ -118,12 +123,17 @@ class CoursRepository extends Model {
         return parent::find($this->table,$id);
     }
 
-    public function updateCourse($id, $data) {
-        return parent::update($this->id, $data);
+    public static function updateCourse($id, $data, $tags) {
+        $tag = new Tag;
+        $tag->deleteCourseTags($id);
+        foreach($tags as $tag) {
+            self::addTagToCours($id, $tag);
+        }
+        return parent::update('Cours', $id, $data);
     }
 
-    public function deleteCourse($id) {
-        return parent:: delete($this->$id);
+    public static function deleteCourse($id) {
+        return parent:: delete('Cours', $id);
     }
 
     public function handleContent($type_contenu, $contenu) {
@@ -138,8 +148,7 @@ class CoursRepository extends Model {
         $conn=self::getConnection();
         $sql="INSERT INTO CoursTag (cours_id,tag_id) VALUES (:cours_id,:tag_id)";
         $stmt=$conn->prepare($sql);
-        foreach($tagId as $tagsId)
-        $stmt->execute(['cours_id'=>CoursId,'tag_id'=>$tagId]);
+        $stmt->execute(['cours_id'=>$CoursId,'tag_id'=>$tagId]);
     }
 
     // Recupere tags d'un cours
@@ -488,5 +497,15 @@ public static function getActiveCourses() {
         error_log("Erreur lors de la récupération des cours actifs : " . $e->getMessage());
         return false;
     }
+}
+
+// methode qui affichie les cours de tescher 
+public function getCoursesByTeacherId($teacherId) {
+    $conn = self::getConnection();
+    // Exemple de requête SQL pour récupérer les cours d'un enseignant
+    $sql = "SELECT * FROM cours WHERE enseignant_id = :teacherId";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(['teacherId' => $teacherId]);
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 }
 }

@@ -4,6 +4,7 @@ use App\Models\Teacher;
 use App\Models\UserRepository;
 use App\Models\Category;
 use App\Models\CoursRepository;
+use App\Models\Tag;
 
 // Démarrer la session pour accéder aux données de l'utilisateur connecté
 session_start();
@@ -23,17 +24,21 @@ $courseId = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
 // Récupérer les informations du cours à modifier
 $course = new CoursRepository();
-$courses = $course->getCourseById($courseId);
+$course = $course->getCourseById($courseId);
 
 // Vérifier si le cours appartient à l'enseignant connecté
-if ($course['enseignant_id'] !== $teacherId) {
-    echo "Vous n'êtes pas autorisé à modifier ce cours.";
-    exit();
-}
+// if ($course['enseignant_id'] !== $teacherId) {
+//     echo "Vous n'êtes pas autorisé à modifier ce cours.";
+//     exit();
+// }
 
 // Récupérer les catégories pour le formulaire
 $category = new Category;
 $categories = $category->showCategorie();
+
+
+$tag = new Tag;
+$tags = $tag->showTag();
 
 // Créer une instance de la classe Teacher
 $teacher = new Teacher(
@@ -65,10 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'langue_id' => $_POST['langue_id'],
         'statut_id' => (int)$_POST['statut_id']
     ];
-
+    $tags = $_POST['tags'];
     // Mettre à jour le cours en utilisant la méthode de la classe Teacher
-    if ($teacher->updateCourse($courseId, $courseData)) {
-        echo "<script>alert('Le cours a été modifié avec succès.'); window.location.href = 'my_courses.php';</script>";
+    if ($teacher->updateCourse($courseId, $courseData, $tags)) {
+        header("Location: my_course.php");
     } else {
         echo "<script>alert('Une erreur s\'est produite lors de la modification du cours.');</script>";
     }
@@ -100,6 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             max-width: 800px;
             width: 100%;
+            overflow-y: auto;
+            max-height: 90vh;
         }
 
         .form-container h2 {
@@ -145,29 +152,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Titre du cours -->
             <div class="mb-3">
                 <label for="titre" class="form-label">Titre du cours :</label>
-                <input type="text" id="titre" name="titre" class="form-control" value="<?= htmlspecialchars($course['titre']) ?>" required>
+                <input type="text" id="titre" name="titre" class="form-control" value="<?= htmlspecialchars($course[0]['titre']) ?>" required>
             </div>
 
             <!-- Description du cours -->
             <div class="mb-3">
                 <label for="description" class="form-label">Description :</label>
-                <textarea id="description" name="description" class="form-control" rows="4" required><?= htmlspecialchars($course['description']) ?></textarea>
+                <textarea id="description" name="description" class="form-control" rows="4" required><?= htmlspecialchars($course[0]['description']) ?></textarea>
             </div>
 
             <!-- Type de contenu -->
             <div class="mb-3">
                 <label for="type_contenu" class="form-label">Type de contenu :</label>
                 <select id="type_contenu" name="type_contenu" class="form-control" required>
-                    <option value="texte" <?= $course['type_contenu'] === 'texte' ? 'selected' : '' ?>>Texte</option>
-                    <option value="video" <?= $course['type_contenu'] === 'video' ? 'selected' : '' ?>>Vidéo</option>
-                    <option value="image" <?= $course['type_contenu'] === 'image' ? 'selected' : '' ?>>Image</option>
+                    <option value="texte" <?= $course[0]['type_contenu'] === 'texte' ? 'selected' : '' ?>>Texte</option>
+                    <option value="video" <?= $course[0]['type_contenu'] === 'video' ? 'selected' : '' ?>>Vidéo</option>
+                    <option value="image" <?= $course[0]['type_contenu'] === 'image' ? 'selected' : '' ?>>Image</option>
                 </select>
             </div>
 
             <!-- Contenu -->
             <div class="mb-3">
                 <label for="contenu" class="form-label">Contenu :</label>
-                <textarea id="contenu" name="contenu" class="form-control" rows="4" required><?= htmlspecialchars($course['contenu']) ?></textarea>
+                <textarea id="contenu" name="contenu" class="form-control" rows="4" required><?= htmlspecialchars($course[0]['contenu']) ?></textarea>
             </div>
 
             <!-- Catégorie -->
@@ -175,40 +182,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="categorie_id" class="form-label">Catégorie :</label>
                 <select id="categorie_id" name="categorie_id" class="form-control" required>
                     <?php foreach ($categories as $category) : ?>
-                        <option value="<?= $category['id'] ?>" <?= $course['categorie_id'] === $category['id'] ? 'selected' : '' ?>>
+                        <option value="<?= $category['id'] ?>" <?= $course[0]['categorie_id'] === $category['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($category['nom']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
+             <!-- Tags -->
+             <div class="mb-3">
+                    <label for="tag_id" class="form-label">Tags :</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-tags"></i></span>
+                        <select id="tag_id" name="tags[]" class="form-control" required multiple>
+                            <?php foreach($tags as $tag) : ?>
+                            <option value="<?= $tag['id'] ?>"><?= $tag['nom'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
             <!-- Niveau -->
             <div class="mb-3">
                 <label for="niveau" class="form-label">Niveau :</label>
                 <select id="niveau" name="niveau" class="form-control" required>
-                    <option value="Débutant" <?= $course['niveau'] === 'Débutant' ? 'selected' : '' ?>>Débutant</option>
-                    <option value="Intermédiaire" <?= $course['niveau'] === 'Intermédiaire' ? 'selected' : '' ?>>Intermédiaire</option>
-                    <option value="Avancé" <?= $course['niveau'] === 'Avancé' ? 'selected' : '' ?>>Avancé</option>
+                    <option value="Débutant" <?= $course[0]['niveau'] === 'Débutant' ? 'selected' : '' ?>>Débutant</option>
+                    <option value="Intermédiaire" <?= $course[0]['niveau'] === 'Intermédiaire' ? 'selected' : '' ?>>Intermédiaire</option>
+                    <option value="Avancé" <?= $course[0]['niveau'] === 'Avancé' ? 'selected' : '' ?>>Avancé</option>
                 </select>
             </div>
 
             <!-- Durée -->
             <div class="mb-3">
                 <label for="duree" class="form-label">Durée (en minutes) :</label>
-                <input type="number" id="duree" name="duree" class="form-control" value="<?= htmlspecialchars($course['duree']) ?>" required>
+                <input type="number" id="duree" name="duree" class="form-control" value="<?= htmlspecialchars($course[0]['duree']) ?>" required>
             </div>
 
             <!-- Prix -->
             <div class="mb-3">
                 <label for="prix" class="form-label">Prix :</label>
-                <input type="number" id="prix" name="prix" class="form-control" step="0.01" value="<?= htmlspecialchars($course['prix']) ?>" required>
+                <input type="number" id="prix" name="prix" class="form-control" step="0.01" value="<?= htmlspecialchars($course[0]['prix']) ?>" required>
             </div>
 
             <!-- Langue -->
             <div class="mb-3">
                 <label for="langue_id" class="form-label">Langue :</label>
                 <select id="langue_id" name="langue_id" class="form-control" required>
-                    <option value="1" <?= $course['langue_id'] === 1 ? 'selected' : '' ?>>Français</option>
+                    <option value="1" <?= $course[0]['langue_id'] === 1 ? 'selected' : '' ?>>Français</option>
                     <!-- Ajoutez d'autres langues si nécessaire -->
                 </select>
             </div>
@@ -217,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="statut_id" class="form-label">Statut :</label>
                 <select id="statut_id" name="statut_id" class="form-control" required>
-                    <option value="2" <?= $course['statut_id'] === 2 ? 'selected' : '' ?>>En attente</option>
+                    <option value="2" <?= $course[0]['statut_id'] === 2 ? 'selected' : '' ?>>En attente</option>
                     <!-- Ajoutez d'autres statuts si nécessaire -->
                 </select>
             </div>

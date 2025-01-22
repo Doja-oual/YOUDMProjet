@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\Teacher;
 use App\Models\UserRepository;
 use App\Models\Category;
+use App\Models\Tag;
 
 
 // Démarrer la session pour accéder aux données de l'utilisateur connecté
@@ -24,6 +25,8 @@ $category = new Category;
 $categories = $category->showCategorie();
 // $langues = UserRepository::getLangue();
 
+$tag = new Tag;
+$tags = $tag->showTag();
 // Récupérer l'ID de l'enseignant connecté depuis la session
 // $teacherId = $_SESSION['teacher_id'];
 
@@ -63,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'statut_id' => (int)$_POST['statut_id'],
         'enseignant_id' => $teacherId
     ];
-
+    $tags = $_POST['tags'];
     // Ajouter le cours en utilisant la méthode de la classe Teacher
-    if ($teacher->addCourse($courseData)) {
+    if ($teacher->addCourse($courseData, $tags)) {
         // Afficher un message de succès
         echo "Le cours a été ajouté avec succès !";
         // Rediriger vers la liste des cours après 2 secondes
@@ -292,6 +295,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select id="categorie_id" name="categorie_id" class="form-control" required>
                             <?php foreach($categories as $category) : ?>
                             <option value="<?= $category['id'] ?>"><?= $category['nom'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="mb-3">
+                    <label for="tag_id" class="form-label">Tags :</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-tags"></i></span>
+                        <select id="tag_id" name="tags[]" class="form-control" required multiple>
+                            <?php foreach($tags as $tag) : ?>
+                            <option value="<?= $tag['id'] ?>"><?= $tag['nom'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
