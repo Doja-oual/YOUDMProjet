@@ -5,10 +5,10 @@ use App\Models\Teacher;
 use App\Models\UserRepository;
 
 // Vérifier si l'enseignant est connecté
-if (!isset($_SESSION['teacher_id'])) {
-    header('Location: login.php');
-    exit();
-}
+    // if (!isset($_SESSION['teacher_id'])) {
+    //     header('Location: ho;.php');
+    //     exit();
+    // }
 
 // Récupérer l'ID de l'enseignant connecté depuis la session
 $teacherId = $_SESSION['teacher_id'];

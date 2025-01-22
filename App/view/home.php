@@ -351,10 +351,10 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                             <a class="nav-link" href="#">Pour les gouvernements</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="login.php">Connexion</a>
+                            <a class="nav-link" href="./front/Auth.php">Connexion</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-light" href="register.php">Inscrivez-vous gratuitement</a>
+                            <a class="nav-link btn btn-light" href="./front/Auth.php">Inscrivez-vous gratuitement</a>
                         </li>
                     </ul>
                 </div>

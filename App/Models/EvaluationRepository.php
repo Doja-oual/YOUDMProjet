@@ -10,18 +10,18 @@ class EvaluationRepository {
         return Database::getConnection();
     }
 
-    public static function  addEvaluation($studentId,$coursId,$note,$comentaire){
+    public static function  addEvaluation($studentId, $courseId, $rating, $comment){
         $conn=self::getConnection();
         $sql="INSERT INTO Evaluation(etudiant_id,cours_id,note,commentaire) 
-        VALUES (:etudiant_id,:cours_id,:note,commentaire)";
-
+        VALUES (:etudiant_id,:cours_id,:note,:commentaire)";
+        // var_dump($studentId, $courseId, $rating, $comment);
         try{
             $stmt = $conn->prepare($sql);
             return $stmt->execute([
                 'etudiant_id' => $studentId,
                 'cours_id' => $courseId,
-                'note' => $note,
-                'commentaire' => $commentaire,
+                'note' => $rating,
+                'commentaire' => $comment,
             ]);
                     }catch (PDOException $e) {
                         error_log("Erreur lors de l'ajout de l'évaluation : " . $e->getMessage());

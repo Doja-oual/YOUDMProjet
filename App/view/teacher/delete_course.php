@@ -12,7 +12,7 @@ session_start();
 // Vérifier si l'enseignant est connecté
 if (!isset($_SESSION['teacher_id'])) {
     // Rediriger vers la page de connexion si l'enseignant n'est pas connecté
-    header('Location: login.php');
+    // header('Location: login.php');
     exit();
 }
 

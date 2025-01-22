@@ -124,6 +124,8 @@ $success = InscriptionRepository::addInscription($this->getId(),$courseId);
    public function getMyCourse(){
     return InscriptionRepository::getInscritCourse($this->getId());
   }
-
+  public function getCompletedCourses($studentId, $courseId){
+    return InscriptionRepository::getCompletedCourses($studentId, $courseId);
+  }
 
 }

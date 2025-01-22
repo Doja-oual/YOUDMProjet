@@ -23,12 +23,14 @@ class Model{
 
     public static function find($table, $id){
         $conn=Database::getConnection();
+        print_r($id);  
         $sql="SELECT * FROM $table WHERE id= :id" ;
         try {
             $stmt = $conn->prepare($sql);
-            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetch(\PDO::FETCH_ASSOC);
+            // $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute([':id' => $id]);
+            $result =  $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            var_dump($result);
         } catch (\PDOException $e) {
             echo "Erreur SQL: " . $e->getMessage();
             return null;

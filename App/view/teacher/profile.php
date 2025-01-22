@@ -9,14 +9,15 @@ use App\Models\Teacher;
 use App\Models\UserRepository;
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    header('Location: /front/Auth.php');
-    exit();
-}
+// if (!isset($_SESSION['user_id'])) {
+//     // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+//     header('Location: /front/Auth.php');
+//     exit();
+// }
 
 // Récupérer l'ID de l'utilisateur connecté depuis la session
-$userId = $_SESSION['user_id'];
+$userId = $_SESSION['userId'];
+// var_dump($_SESSION['user']); die;
 
 // Récupérer les informations de l'utilisateur depuis la base de données
 $userData = UserRepository::getUserById($userId);
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'photo_profil' => trim($_POST['photo_profil']),
         'bio' => trim($_POST['bio']),
         'pays' => trim($_POST['pays']),
-        'langue_id' => (int)$_POST['langue_id']
+        'langue_id' => 3
     ];
 
     if ($teacher->updateProfile($updateData)) {
@@ -93,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             animation: fadeIn 1s ease-in-out;
         }
 
-        @keyframes fadeIn {
+        /* @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(-20px);
@@ -102,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
+        } */
 
         .profile-container h2 {
             margin-bottom: 20px;
@@ -178,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
 
         <!-- Formulaire de modification du profil (caché par défaut) -->
-        <div id="form-container" class="form-container">
+        <div id="form-container" class="">
             <form id="profile-form" method="POST">
                 <!-- Photo de profil (URL) -->
                 <div class="mb-3">
@@ -199,17 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Langue -->
-                <div class="mb-3">
-                    <label for="langue_id" class="form-label">Langue :</label>
-                    <select id="langue_id" name="langue_id" class="form-control" required>
-                        <?php foreach ($langues as $langue) : ?>
-                            <option value="<?= $langue['id'] ?>" <?= $langue['id'] === $teacher->getProfile()['langue_id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($langue['nom']) ?> (<?= htmlspecialchars($langue['code']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
+              
+                
                 <!-- Bouton de soumission -->
                 <button type="submit" class="btn btn-edit">
                     <i class="fas fa-save"></i> Enregistrer les modifications
@@ -223,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <!-- Script pour gérer l'affichage/masquage du formulaire -->
-    <script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", function () {
             const editButton = document.getElementById("edit-profile-button");
             const formContainer = document.getElementById("form-container");
@@ -242,6 +234,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 console.error("Élément non trouvé : editButton ou formContainer");
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>

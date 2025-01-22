@@ -122,7 +122,7 @@ foreach ($usersDistribution as $user) {
         <ul class="sidebar-menu">
             <!-- Accueil -->
             <li>
-                <a href="?page=dashboard">
+                <a href="dashboard.php">
                     <i class="fas fa-home"></i> <span>Accueil</span>
                 </a>
             </li>

@@ -14,7 +14,7 @@ class UserRepository {
         $conn = self::getConnection();
         $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id,statut_id) 
                 VALUES (:nom, :email, :mot_de_passe, :role_id,:statut_id)";
-        
+    
         try {
             $stmt = $conn->prepare($sql);
             return $stmt->execute([
@@ -249,34 +249,26 @@ class UserRepository {
         if (isset($data['mot_de_passe'])) {
             $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
         }
-        $sql = "UPDATE Utilisateur SET 
-                nom = :nom,
-                email = :email,
-                mot_de_passe = :mot_de_passe,
+        
+        $sql = "UPDATE Utilisateur SET
                 bio = :bio,
-                date_inscription = :date_inscription,
                 photo_profil = :photo_profil,
                 pays = :pays,
-                langue_id = :langue_id,
-                statut_id = :statut_id
+                langue_id = :langue_id
                 WHERE id = :id";
-        
+
         try {
             $stmt = $conn->prepare($sql);
             return $stmt->execute([
-                'nom' => $data['nom'],
-                'email' => $data['email'],
-                'mot_de_passe' => $data['mot_de_passe'] ?? null,
                 'bio' => $data['bio'] ?? null,
-                'date_inscription' => $data['date_inscription'] ?? null,
                 'photo_profil' => $data['photo_profil'] ?? null,
                 'pays' => $data['pays'] ?? null,
                 'langue_id' => $data['langue_id'] ?? null,
-                'statut_id' => $data['statut_id'] ?? null,
-                'id' => $id
+                'id' => $id 
             ]);
         } catch (PDOException $e) {
-            error_log("Erreur lors de la mise à jour de l'utilisateur : " . $e->getMessage());
+            var_dump("Erreur lors de la mise à jour de l'utilisateur : " . $e->getMessage());
+            die;
             return false;
         }
     }

@@ -10,14 +10,14 @@ use App\Models\UserRepository;
 session_start();
 
 // Vérifier si l'enseignant est connecté
-if (!isset($_SESSION['teacher_id'])) {
+if (!isset($_SESSION['user'])) {
     // Rediriger vers la page de connexion si l'enseignant n'est pas connecté
     header('Location: login.php');
     exit();
 }
 
 // Récupérer l'ID de l'enseignant connecté depuis la session
-$teacherId = $_SESSION['teacher_id'];
+$teacherId = $_SESSION['userId'];
 
 // Récupérer les informations de l'enseignant depuis la base de données
 $teacherData = UserRepository::getUserById($teacherId);
@@ -25,16 +25,16 @@ $teacherData = UserRepository::getUserById($teacherId);
 // Créer une instance de la classe Teacher
 $teacher = new Teacher(
     $teacherId,
-    $teacherData['username'],
+    $teacherData['nom'],
     $teacherData['email'],
-    $teacherData['passwordHash'],
-    $teacherData['role'],
-    $teacherData['dateInscription'],
-    $teacherData['photoProfil'],
+    $teacherData['mot_de_passe'],
+    $teacherData['role_id'],
+    $teacherData['date_inscription'],
+    $teacherData['photo_profil'],
     $teacherData['bio'],
     $teacherData['pays'],
-    $teacherData['langueId'],
-    $teacherData['statutId']
+    $teacherData['langue_id'],
+    $teacherData['statut_id']
 );
 
 // Récupérer les statistiques de l'enseignant

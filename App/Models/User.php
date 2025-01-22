@@ -25,7 +25,7 @@ abstract class User {
     protected $statutId;
 
     // Constructor
-    public function __construct( $id, $username, $email, $passwordHash, $role, $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId ) {
+    public function __construct( $id, $username, $email, $passwordHash, $role, $dateInscription = null, $photoProfil = null, $bio = null, $pays = null, $langueId = null, $statutId = null) {
         $this->id = $id;
         $this->username = $username;
         $this->email = $email;
@@ -41,6 +41,7 @@ abstract class User {
 
     // Getters
     public function getId() {
+        echo $this->id;
         return $this->id;
     }
 

@@ -5,14 +5,23 @@ require_once __DIR__ . '/../../../vendor/autoload.php'; // Charger l'autoloader
 use App\Models\UserRepository;
 use App\Models\User;
 
+// if(isset($_SESSION['user'])) {
+//     header("Location: ../home.php");
+// }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if(isset($_POST['register'])) {
         $username = $_POST['nom'];
         $email = $_POST['email'];
         $password = $_POST['mot_de_passe'];
-        $role = $_POST['role'];
-        $statu = $_POST['statut'];
+        $role = (int)$_POST['role'];
+        if($role === 2) {
+            $statu = 2;
+        }
+        else { 
+            $statu = 1;
+        }
         UserRepository::register($username, $email, $password, $role,$statu);
     }
 
@@ -22,13 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = UserRepository::login($email, $password); 
         if ($user) {
             $_SESSION['user'] = $user; // Stocker l'objet dans la session
+            $_SESSION['userId'] = $user->getId();
             // Rediriger en fonction du rôle
             switch ($user->getRole()) {
                 case User::ROLE_ADMIN: 
                     header('Location: ../admin/dashboard.php');
                     break;
                 case User::ROLE_ENSEIGNANT: 
-                    header('Location: ../teacher/dachboard.php');
+                    header('Location: ../teacher/add_course.php');
                     break;
                 case User::ROLE_ETUDIANT: 
                     header('Location: ../student/student.php');
@@ -135,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input class="form-check-input" name="role" type="radio" id="register-role-enseignant" value="<?= User::ROLE_ENSEIGNANT ?>" required>
                         <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
 
                     <label for="statut_id" class="form-label">Statut :</label>
                     <div class="input-group">
@@ -144,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="<? User::STATUS_INACTIVE ?>">En attente</option>
                         </select>
                         </div>
-                </div>
+                </div> -->
                 <button type="submit" name="register" class="btn btn-primary">S'inscrire</button>
                 <div class="text-center mt-3">
                     <a href="#" class="toggle-form" onclick="toggleForm('login-form', 'register-form')">Déjà un compte? Connexion</a>

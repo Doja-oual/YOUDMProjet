@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'statut_id' => (int)$_POST['statut_id'],
         'enseignant_id' => $teacherId
     ];
+
     // Ajouter le cours en utilisant la méthode de la classe Teacher
     if ($teacher->addCourse($courseData)) {
         // Afficher un message de succès
@@ -219,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
-        <form id="form-cours" action="my_course.php" method="POST">
+        <form id="form-cours" action="" method="POST">
             <!-- Slide 1 : Informations de base -->
             <div class="slide active" id="slide1">
                 <!-- Titre du cours -->

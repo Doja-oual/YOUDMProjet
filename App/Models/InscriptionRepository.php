@@ -69,5 +69,22 @@ public static function getInscritCourse($studentId){
 
 
 }
+/// course qui termine 
+public static function getCompletedCourses($studentId,$courseId) {
+    $conn = self::getConnection();
+    $sql = "UPDATE Inscription SET progress = 100 WHERE etudiant_id = :etudiant_id AND cours_id = :cours_id";
 
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            'etudiant_id' => $studentId,
+            'cours_id' => $courseId
+        ]);
+        return true;
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la mise à jour du cours comme terminé : " . $e->getMessage());
+        return false;
+
+}
+}
 }

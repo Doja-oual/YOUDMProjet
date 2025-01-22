@@ -143,7 +143,7 @@ $totalPages = ceil($totalCourses / $perPage);
                                     <p class="card-text">Enseignant : <?= htmlspecialchars($course['enseignant_nom']) ?></p>
                                     <p class="card-text">Catégorie : <?= htmlspecialchars($course['categorie_nom']) ?></p>
                                     <p class="card-text">Prix : <?= htmlspecialchars($course['prix']) ?> €</p>
-                                    <a href="login.php" class="btn btn-primary">S'inscrire</a>
+                                    <a href="#" class="btn btn-primary">S'inscrire</a>
                                 </div>
                             </div>
                         </div>

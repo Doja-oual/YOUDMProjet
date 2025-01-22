@@ -1,8 +1,6 @@
 <?php
-// Include the class definition for the $user object
 require_once __DIR__ . '/../../../vendor/autoload.php'; // Composer autoloader
 
-// Start the session after the class is loaded
 session_start();
 
 use App\Models\CoursRepository;
@@ -11,34 +9,21 @@ use App\Models\InscriptionRepository;
 
 // Verify if the user is logged in
 if (!isset($_SESSION['user'])) {
-    // Redirect to the login page if the user is not logged in
     header('Location: ../../views/auth/login.php');
     exit();
 }
 
-// Retrieve the User object from the session
 $user = $_SESSION['user'];
+$studentId = $user->getId(); 
 
-// Retrieve the student ID from the $user object
-// Adjust this based on your $user object's structure
-$studentId = $user->getId(); // Example: if $user has a getId() method
-// OR
-// $studentId = $user['id']; // Example: if $user is an associative array
-// OR
-// $studentId = $user->id; // Example: if $user is an object with a public property
-
-// Retrieve all active courses
 $activeCourses = CoursRepository::getActiveCourses();
 
-// Handle course enrollment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscrire'])) {
     $courseId = $_POST['course_id'];
     
-    // Verify if the student is already enrolled in this course
     $isAlreadyEnrolled = UserRepository::isStudentEnrolled($studentId, $courseId);
     
     if (!$isAlreadyEnrolled) {
-        // Add the enrollment
         if (InscriptionRepository::addInscription($studentId, $courseId)) {
             $successMessage = "Inscription réussie !";
         } else {
@@ -56,8 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscrire'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cours Actifs - Youdemy</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../../public/assets/css/css.css">
     <style>
+        /* Custom Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
@@ -87,40 +78,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscrire'])) {
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1>Cours Actifs</h1>
-
-        <!-- Success or error messages -->
-        <?php if (isset($successMessage)) : ?>
-            <div class="alert alert-success"><?= htmlspecialchars($successMessage) ?></div>
-        <?php endif; ?>
-        <?php if (isset($errorMessage)) : ?>
-            <div class="alert alert-danger"><?= htmlspecialchars($errorMessage) ?></div>
-        <?php endif; ?>
-
-        <!-- List of active courses -->
-        <?php if ($activeCourses) : ?>
-            <div class="row">
-                <?php foreach ($activeCourses as $course) : ?>
-                    <div class="col-md-4">
-                        <div class="course-card">
-                            <h3><?= htmlspecialchars($course['titre']) ?></h3>
-                            <p><?= htmlspecialchars($course['description']) ?></p>
-                            <p><strong>Enseignant :</strong> <?= htmlspecialchars($course['enseignant_nom']) ?></p>
-                            <p><strong>Catégorie :</strong> <?= htmlspecialchars($course['categorie_nom']) ?></p>
-                            <form method="POST">
-                                <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-                                <button type="submit" name="inscrire" class="btn-inscrire">S'inscrire</button>
-                            </form>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="#">Youdemy</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Tableau de bord</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="pageCourse.php">Cours</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Mes cours</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Certifications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        <?php else : ?>
-            <p class="text-center">Aucun cours actif disponible pour le moment.</p>
-        <?php endif; ?>
-    </div>
+        </nav>
+    </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main Content -->
+    <main class="dashboard">
+        <div class="container mt-4">
+            <h1>Cours Actifs</h1>
+
+            <!-- Success or error messages -->
+            <?php if (isset($successMessage)) : ?>
+                <div class="alert alert-success"><?= htmlspecialchars($successMessage) ?></div>
+            <?php endif; ?>
+            <?php if (isset($errorMessage)) : ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($errorMessage) ?></div>
+            <?php endif; ?>
+
+            <!-- List of active courses -->
+            <?php if ($activeCourses) : ?>
+                <div class="row">
+                    <?php foreach ($activeCourses as $course) : ?>
+                        <div class="col-md-4">
+                            <div class="course-card">
+                                <h3><?= htmlspecialchars($course['titre']) ?></h3>
+                                <p><?= htmlspecialchars($course['description']) ?></p>
+                                <p><strong>Enseignant :</strong> <?= htmlspecialchars($course['enseignant_nom']) ?></p>
+                                <p><strong>Catégorie :</strong> <?= htmlspecialchars($course['categorie_nom']) ?></p>
+                                <form method="POST">
+                                    <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                                    <button type="submit" name="inscrire" class="btn-inscrire">S'inscrire</button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <p class="text-center">Aucun cours actif disponible pour le moment.</p>
+            <?php endif; ?>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Youdemy. Tous droits réservés.</p>
+            <p>
+                <a href="#">Politique de confidentialité</a> |
+                <a href="#">Conditions d'utilisation</a> |
+                <a href="#">Mentions légales</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
