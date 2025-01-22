@@ -37,7 +37,6 @@ $teacher = new Teacher(
     $teacherData['statutId']
 );
 
-// Récupérer les statistiques de l'enseignant
 $teacherStatistics = $teacher->getTeacherStatistics();
 ?>
 

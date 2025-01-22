@@ -3,10 +3,8 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 use App\Models\UserRepository;
 use App\Models\User;
 
-// Récupérer la liste des enseignants
 $teachers = UserRepository::getTeachers();
 
-// Vérifier s'il y a des erreurs
 if ($teachers === false) {
     die("Une erreur s'est produite lors de la récupération des enseignants.");
 }
@@ -43,7 +41,7 @@ if ($teachers === false) {
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <h1>Liste des Enseignants</h1>
+                <h1>Tableau de bord Admin</h1>
             </div>
             <div class="header-right">
                 <div class="user-profile">
@@ -52,7 +50,7 @@ if ($teachers === false) {
                 </div>
                 <button class="btn btn-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    <a href="#">Déconnexion</a>
+                    <a href="../front/logout.php">Déconnexion</a>
                 </button>
             </div>
         </div>
@@ -64,7 +62,7 @@ if ($teachers === false) {
         <ul class="sidebar-menu">
             <!-- Accueil -->
             <li>
-                <a href="?page=dashboard">
+                <a href="dashboard.php">
                     <i class="fas fa-home"></i> <span>Accueil</span>
                 </a>
             </li>
@@ -77,7 +75,7 @@ if ($teachers === false) {
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="?page=validate_teachers">
+                        <a href="Valide_teacher.php">
                             <i class="fas fa-check-circle"></i> <span>Valider les enseignants</span>
                         </a>
                     </li>
@@ -92,41 +90,40 @@ if ($teachers === false) {
                         </a>
                     </li>
                     <li>
-                        <a href="?page=manage_users">
+                        <a href="user_gestion.php">
                             <i class="fas fa-cogs"></i> <span>Gérer les utilisateurs</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <!-- Gestion des tags -->
-            <li class="has-submenu">
-                <a href="#">
-                    <i class="fas fa-tags"></i> <span>Gestion des tags</span>
-                    <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a href="?page=list_tags">
-                            <i class="fas fa-list"></i> <span>Liste des tags</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=add_tag">
-                            <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=edit_tag">
-                            <i class="fas fa-edit"></i> <span>Modifier un tag</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=delete_tag">
-                            <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                 <li class="has-submenu">
+    <a href="#">
+        <i class="fas fa-tags"></i> <span>Gestion des tags</span>
+        <i class="fas fa-chevron-down dropdown-icon"></i>
+    </a>
+    <ul class="submenu">
+        <li>
+            <a href="list_tags.php">
+                <i class="fas fa-list"></i> <span>Liste des tags</span>
+            </a>
+        </li>
+        <li>
+            <a href="add_tags.php">
+                <i class="fas fa-plus-circle"></i> <span>Ajouter un tag</span>
+            </a>
+        </li>
+        <li>
+            <a href="edit_tags.php">
+                <i class="fas fa-edit"></i> <span>Modifier un tag</span>
+            </a>
+        </li>
+        <li>
+            <a href="delete_tags.php">
+                <i class="fas fa-trash"></i> <span>Supprimer un tag</span>
+            </a>
+        </li>
+    </ul>
+          </li>
 
             <!-- Gestion des cours -->
             <li class="has-submenu">
@@ -141,20 +138,12 @@ if ($teachers === false) {
                         </a>
                     </li>
                     <li>
-                        <a href="?page=add_course">
-                            <i class="fas fa-plus-circle"></i> <span>Ajouter un cours</span>
+                        <a href="validation_course.php">
+                            <i class="fas fa-plus-circle"></i> <span>Validation des cours</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="?page=edit_course">
-                            <i class="fas fa-edit"></i> <span>Modifier un cours</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="?page=delete_course">
-                            <i class="fas fa-trash"></i> <span>Supprimer un cours</span>
-                        </a>
-                    </li>
+                   
+                    
                 </ul>
             </li>
 
@@ -166,22 +155,22 @@ if ($teachers === false) {
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="?page=list_categories">
+                        <a href="list_category.php">
                             <i class="fas fa-list"></i> <span>Liste des catégories</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=add_category">
+                        <a href="add _category.php">
                             <i class="fas fa-plus-circle"></i> <span>Ajouter une catégorie</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=edit_category">
+                        <a href="edit_category.php">
                             <i class="fas fa-edit"></i> <span>Modifier une catégorie</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?page=delete_category">
+                        <a href="delete_category.php">
                             <i class="fas fa-trash"></i> <span>Supprimer une catégorie</span>
                         </a>
                     </li>
@@ -189,13 +178,9 @@ if ($teachers === false) {
             </li>
 
             <!-- Statistiques -->
-            <li>
-                <a href="?page=statistics">
-                    <i class="fas fa-chart-line"></i> <span>Statistiques</span>
-                </a>
-            </li>
+            
         </ul>
-    </div>
+</div>
 
     <!-- Contenu principal -->
     <div class="main-content">

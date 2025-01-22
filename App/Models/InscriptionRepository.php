@@ -87,4 +87,21 @@ public static function getCompletedCourses($studentId,$courseId) {
 
 }
 }
+public static function getCompletedCoursesByStudent($studentId) {
+    $conn = self::getConnection();
+    $sql = "SELECT c.id, c.titre, c.description, u.nom AS enseignant_nom, i.date_fin 
+            FROM Cours c
+            JOIN Inscription i ON c.id = i.cours_id
+            JOIN User u ON c.enseignant_id = u.id
+            WHERE i.etudiant_id = :etudiant_id AND i.progress = 100";
+
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['etudiant_id' => $studentId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération des cours terminés : " . $e->getMessage());
+        return false;
+    }
+}
 }

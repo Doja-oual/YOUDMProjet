@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['mot_de_passe'];
         $role = (int)$_POST['role'];
         if($role === 2) {
-            $statu = 2;
+            $statu = 4;
         }
-        else { 
+        else if($role === 1) { 
             $statu = 1;
         }
         UserRepository::register($username, $email, $password, $role,$statu);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if($user->getStatutId() === 1) {
                         header('Location: ../teacher/add_course.php');
                     } else {
-                        header('Location: ../home.php');
+                        header('Location: msgNonActif.php');
                     }
                     break;
                 case User::ROLE_ETUDIANT: 
@@ -81,7 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="../../../public/assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
+
     <div class="form-container">
+    <a href="../home.php" type="submit" name="" class="btn btn-primary">Youdemy</a>
+
         <div id="login-form">
             <h2>Connexion</h2>
             <?php if (isset($login_error)): ?>
@@ -110,8 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="text-center mt-3">
                     <a href="#" class="toggle-form" onclick="toggleForm('register-form', 'login-form')">Pas de compte? S'inscrire</a>
                 </div>
+
             </form>
+            
         </div>
+
+
 
         <div id="register-form" class="hidden">
             <h2>Inscription</h2>
@@ -177,6 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
+
 
     <script>
         function toggleForm(showId, hideId) {

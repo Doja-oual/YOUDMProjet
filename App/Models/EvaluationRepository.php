@@ -31,16 +31,23 @@ class EvaluationRepository {
     }
 
     // recuper les evaluation d'un etudiant
-    public static function getEvaluationsByStudent($studentId){
+    public static function getAllEvaluations() {
+        // Connexion à la base de données
         $conn = self::getConnection();
-        $sql = "SELECT * FROM Evaluation WHERE etudiant_id = :etudiant_id";
-        
+    
+        // Requête SQL pour récupérer toutes les évaluations
+        $sql = "SELECT * FROM Evaluation";
+    
         try {
+            // Préparation et exécution de la requête
             $stmt = $conn->prepare($sql);
-            $stmt->execute(['etudiant_id' => $studentId]);
+            $stmt->execute();
+    
+            // Retourner toutes les évaluations sous forme de tableau associatif
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des évaluations : " . $e->getMessage());
+            // Journaliser l'erreur et retourner false en cas d'échec
+            error_log("Erreur lors de la récupération de toutes les évaluations : " . $e->getMessage());
             return false;
         }
     }

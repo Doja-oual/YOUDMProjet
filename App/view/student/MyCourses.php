@@ -1,8 +1,6 @@
 <?php
-// Inclure l'autoload de Composer
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-// Utiliser les classes nécessaires
 use App\Models\User;
 use App\Models\Student;
 use App\Models\UserRepository;
@@ -11,29 +9,23 @@ use App\Models\InscriptionRepository;
 
 session_start();
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user'])) {
     // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
     header('Location: ../../views/auth/login.php');
     exit();
 }
 
-// Récupérer l'objet User de la session
 $user = $_SESSION['user'];
 
-// Vérifier que l'objet est bien une instance de User ou d'une de ses classes enfant
 if (!($user instanceof User)) {
     die("Erreur : L'objet dans la session n'est pas une instance de User.");
 }
 
-// Créer une instance de Student avec l'objet User
 $student = new Student($user);
 
-// Récupérer les cours auxquels l'étudiant est inscrit
 $enrolledCourses = $student->getMyCourse($student->getId());
 
-// Récupérer les cours terminés par l'étudiant
-$completedCourses = $student->getCompletedCourses($student->getId());
+$completedCourses = $student->getCompletedCoursesByTeacher($student->getId());
 ?>
 
 <!DOCTYPE html>
@@ -79,26 +71,26 @@ $completedCourses = $student->getCompletedCourses($student->getId());
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="#">Youdemy</a>
+                <a class="navbar-brand" href="home.php">Youdemy</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Tableau de bord</a>
+                            <a class="nav-link" href="student.php">Tableau de bord</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="pageCourse.php">Cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Mes cours</a>
+                            <a class="nav-link" href="MyCourses.php">Mes cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Certifications</a>
+                            <a class="nav-link" href="Cirtificat.php">Certifications</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Profil</a>
+                            <a class="nav-link" href="profile.php">Profil</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>

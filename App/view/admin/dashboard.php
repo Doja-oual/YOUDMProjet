@@ -7,31 +7,15 @@ use App\Models\User;
 use App\Models\UserRepository;
 use App\Models\CoursRepository;
 
-// Créer une instance de la classe Admin
-// $admin = new Admin(
-//     1, // ID de l'admin
-//     'AdminName', // Nom de l'admin
-//     'admin@example.com', // Email de l'admin
-//     'hashed_password', // Mot de passe hashé
-//     User::ROLE_ADMIN, // Rôle (admin)
-//     '2023-01-01', // Date d'inscription
-//     'profile.jpg', // Photo de profil
-//     'Bio de l\'admin', // Bio
-//     'Pays', // Pays
-//     1, // Langue ID
-//     1 // Statut ID
-// );
 
-// Recuperer les statistiques globales
+
 $totalCourses = CoursRepository::getTotalCourses();
 $totalStudents = UserRepository::getTotalStudents();
 $totalTeachers = UserRepository::getTotalTeachers();
 
-// Récupérer les données réelles pour les graphiques
 $coursesByMonth = CoursRepository::getCoursesByMonth();
 $usersDistribution = UserRepository::getUsersDistribution();
 
-// Preparer les données pour les graphiques
 $months = [];
 $coursesData = [];
 foreach ($coursesByMonth as $course) {
@@ -87,7 +71,6 @@ foreach ($usersDistribution as $user) {
             margin: 0;
         }
 
-        /* Styles pour les conteneurs de graphiques */
         .chart-container {
             background: #ffffff;
             border-radius: 10px;
@@ -238,11 +221,7 @@ foreach ($usersDistribution as $user) {
             </li>
 
             <!-- Statistiques -->
-            <li>
-                <a href="?page=statistics">
-                    <i class="fas fa-chart-line"></i> <span>Statistiques</span>
-                </a>
-            </li>
+            
         </ul>
 </div>
 

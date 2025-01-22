@@ -5,7 +5,6 @@ use App\Models\CoursRepository;
 use App\Models\EvaluationRepository;
 session_start();
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user'])) {
     header('Location: ../../views/auth/login.php');
     exit();
@@ -14,14 +13,12 @@ if (!isset($_SESSION['user'])) {
 $user = $_SESSION['user'];
 $studentId = $user->getId(); 
 
-// Récupérer l'ID du cours depuis l'URL
 $courseId = (int)$_GET['course_id'] ?? null;
 
 if (!$courseId) {
     die("ID du cours non spécifié.");
 }
 
-// Récupérer les détails du cours
 $course=new CoursRepository;
 $student = new Student($user);
 
@@ -31,7 +28,6 @@ if (!$courseDetails) {
     die("Cours non trouvé.");
 }
 
-// Traitement du formulaire "Terminer le cours"
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_course'])) {
     if ($student->getCompletedCourses($studentId, $courseId)) {
         $successMessage = "Le cours a été marqué comme terminé !";
@@ -40,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_course'])) {
     }
 }
 
-// Traitement du formulaire d'évaluation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_evaluation'])) {
     $rating = $_POST['rating'] ?? null;
     $comment = $_POST['comment'] ?? '';
@@ -91,26 +86,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_evaluation']))
 <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="#">Youdemy</a>
+                <a class="navbar-brand" href="home.php">Youdemy</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Tableau de bord</a>
+                            <a class="nav-link" href="student.php">Tableau de bord</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="pageCourse.php">Cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Mes cours</a>
+                            <a class="nav-link" href="MyCourses.php">Mes cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Certifications</a>
+                            <a class="nav-link" href="Cirtificat.php">Certifications</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Profil</a>
+                            <a class="nav-link" href="profile.php">Profil</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>
@@ -120,7 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_evaluation']))
             </div>
         </nav>
     </header>
-    <div class="container mt-4">
+
+
+
+       <div class="container mt-4">
         <h1><?= htmlspecialchars($courseDetails['titre']) ?></h1>
 
         <!-- Messages de succès ou d'erreur -->
@@ -136,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_evaluation']))
             <h2>Description du cours</h2>
             <p><?= htmlspecialchars($courseDetails['description']) ?></p>
             <p><strong>contenu :</strong> <?= htmlspecialchars($courseDetails['contenu']) ?></p>
-            <!-- Ajoutez ici le contenu du cours (vidéos, textes, etc.) -->
         </div>
 
         <!-- Bouton "Terminer le cours" -->
@@ -168,6 +165,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_evaluation']))
             </p>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script></body>
+      </html>

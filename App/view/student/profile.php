@@ -99,28 +99,31 @@
 <body>
     <!-- En-tête -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="#">Youdemy</a>
+                <a class="navbar-brand" href="home.php">Youdemy</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Tableau de bord</a>
+                            <a class="nav-link" href="student.php">Tableau de bord</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Mes cours</a>
+                            <a class="nav-link" href="pageCourse.php">Cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Certifications</a>
+                            <a class="nav-link" href="MyCourses.php">Mes cours</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Profil</a>
+                            <a class="nav-link" href="Cirtificat.php">Certifications</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-primary" href="#">Déconnexion</a>
+                            <a class="nav-link" href="profile.php">Profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>
                         </li>
                     </ul>
                 </div>
@@ -160,39 +163,7 @@
                 </div>
             </section>
 
-            <!-- Section : Cours en cours -->
-            <section class="profile-section">
-                <h2><i class="fas fa-book me-2"></i>Cours en cours</h2>
-                <!-- Cours 1 -->
-                <div class="course-card">
-                    <h3>JavaScript pour débutants</h3>
-                    <p>Découvrez les bases de JavaScript pour rendre vos pages web interactives.</p>
-                    <span class="badge badge-primary">En cours</span>
-                </div>
-                <!-- Cours 2 -->
-                <div class="course-card">
-                    <h3>React.js : Les fondamentaux</h3>
-                    <p>Apprenez à créer des applications web modernes avec React.js.</p>
-                    <span class="badge badge-primary">En cours</span>
-                </div>
-            </section>
-
-            <!-- Section : Certifications -->
-            <section class="profile-section">
-                <h2><i class="fas fa-trophy me-2"></i>Certifications</h2>
-                <!-- Certification 1 -->
-                <div class="certification-card">
-                    <h3>Certification HTML et CSS</h3>
-                    <p>Certification obtenue le 15/10/2023.</p>
-                    <span class="badge badge-success">Obtenue</span>
-                </div>
-                <!-- Certification 2 -->
-                <div class="certification-card">
-                    <h3>Certification JavaScript</h3>
-                    <p>En cours de validation.</p>
-                    <span class="badge badge-primary">En attente</span>
-                </div>
-            </section>
+          
         </div>
     </main>
 

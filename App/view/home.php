@@ -2,12 +2,18 @@
 // Inclure les classes nécessaires
 require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Models\CoursRepository;
+use App\Models\EvaluationRepository;
+
+
 
 // Récupérer les cours gratuits
 $freeCourses = CoursRepository::getFreeCoursesWithDetailsGratuit();
 
 // Récupérer les cours actifs
 $activeCourses = CoursRepository::getActiveCoursesWithDetails();
+$evaluations = EvaluationRepository::getAllEvaluations();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -327,7 +333,7 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
-                <a class="navbar-brand" href="#">Youdemy</a>
+                <a class="navbar-brand" href="home.php">Youdemy</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -342,14 +348,10 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                     </div>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Pour les entreprises</a>
+                            <a class="nav-link" href="catalogue.php">Cataloge des course</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Pour les universités</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Pour les gouvernements</a>
-                        </li>
+                        
+    
                         <li class="nav-item">
                             <a class="nav-link" href="./front/Auth.php">Connexion</a>
                         </li>
@@ -369,7 +371,7 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             <div class="text-content">
                 <h1>Nouvelle année. De grands objectifs. Des économies plus importantes.</h1>
                 <p>Atteignez vos objectifs professionnels grâce à un accès illimité d'un an à plus de 1000 programmes d'apprentissage de Google, Microsoft, IBM et bien d'autres encore, avec une réduction de 65%.</p>
-                <a href="#" class="btn btn-primary">Économiser</a>
+                <a href="catalogue.php" class="btn btn-primary">Économiser</a>
                 <a href="catalogue.php" class="btn btn-secondary">Voir le catalogue complet</a>
 
             </div>
@@ -396,7 +398,7 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
                                     <p class="card-text">Enseignant : <?= htmlspecialchars($course['enseignant_nom']) ?></p>
                                     <p class="card-text">Catégorie : <?= htmlspecialchars($course['categorie_nom']) ?></p>
                                     <p class="card-text">Prix : <?= htmlspecialchars($course['prix']) ?> €</p>
-                                    <a href="login.php" class="btn btn-primary">S'inscrire</a>
+                                    <a href="./front/Auth.php" class="btn btn-primary">S'inscrire</a>
                                 </div>
                             </div>
                         </div>
@@ -432,7 +434,31 @@ $activeCourses = CoursRepository::getActiveCoursesWithDetails();
             </div>
         </div>
     </section>
-
+    <section class="student-evaluations-section">
+    <div class="container">
+        <h2>Mes Évaluations</h2>
+        <p class="text-center mb-4">Voici la liste de vos évaluations pour les cours auxquels vous êtes inscrit.</p>
+        <div class="row">
+            <?php if ($evaluations): ?>
+                <?php foreach ($evaluations as $evaluation): ?>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>Note :</strong> <?= htmlspecialchars($evaluation['note']) ?> / 20<br>
+                                    <strong>Commentaire :</strong> <?= htmlspecialchars($evaluation['commentaire']) ?><br>
+                                    <strong>Date :</strong> <?= htmlspecialchars($evaluation['date_evaluation']) ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-center">Aucune évaluation disponible pour le moment.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
     <!-- Pied de page -->
     <footer>
         <div class="container">
