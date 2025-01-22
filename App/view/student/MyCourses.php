@@ -121,6 +121,10 @@ $completedCourses = $student->getCompletedCoursesByTeacher($student->getId());
                                     <h3><?= htmlspecialchars($course['titre']) ?></h3>
                                     <p><?= htmlspecialchars($course['description']) ?></p>
                                     <a href="course_page.php?course_id=<?= $course['id'] ?>" class="btn btn-primary mt-3">Continuer</a>
+                                    <a href="add_certificat.php?course_id=<?= $course['id'] ?>" class="btn btn-success mt-3">
+                                  <i class="fas fa-certificate"></i> Demander un Certificat
+                                     </a>
+
                                 </div>
                             </div>
                         <?php endforeach; ?>

@@ -118,8 +118,8 @@ $certificates = $student->getMyCertificats($student->getId());
                                 <div class="card">
                                     <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Certification 1">
                                     <div class="card-body">
-                                        <h5 class="card-title"><?php echo htmlspecialchars($certificate['name']); ?></h5>
-                                        <p class="card-text">Certification obtenue le <?php echo htmlspecialchars($certificate['date']); ?>.</p>
+                                        <h5 class="card-title"><?php echo htmlspecialchars($certificate['cours_id']); ?></h5>
+                                        <p class="card-text">Certification obtenue le <?php echo htmlspecialchars($certificate['date_emission']); ?>.</p>
                                         <a href="#" class="btn btn-primary">Voir la certification</a>
                                     </div>
                                 </div>

@@ -29,7 +29,7 @@ class Model{
             $stmt = $conn->prepare($sql);
             // $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute([':id' => $id]);
-            $result =  $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result =  $stmt->fetch(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
             echo "Erreur SQL: " . $e->getMessage();

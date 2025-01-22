@@ -1,28 +1,17 @@
 <?php
 session_start();
 
-// Inclure l'autoloader de Composer (si vous utilisez Composer)
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-// Importer les classes nécessaires
 use App\Models\Teacher;
 use App\Models\UserRepository;
 
-// Vérifier si l'utilisateur est connecté
-// if (!isset($_SESSION['user_id'])) {
-//     // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-//     header('Location: /front/Auth.php');
-//     exit();
-// }
 
-// Récupérer l'ID de l'utilisateur connecté depuis la session
+
 $userId = $_SESSION['userId'];
-// var_dump($_SESSION['user']); die;
 
-// Récupérer les informations de l'utilisateur depuis la base de données
 $userData = UserRepository::getUserById($userId);
 
-// Vérifier si l'utilisateur existe
 if (!$userData) {
     echo "<script>alert('Utilisateur non trouvé.'); window.location.href = 'login.php';</script>";
     exit();

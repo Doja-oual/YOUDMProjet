@@ -1,185 +1,231 @@
+<?php
+// Activer l'affichage des erreurs PHP
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Démarrer la session
+session_start();
+
+// Inclure l'autoloader de Composer
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+// Importer les classes nécessaires
+use App\Models\Student;
+use App\Models\UserRepository;
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['userId'])) {
+    echo "<script>alert('Vous devez être connecté pour accéder à cette page.'); window.location.href = 'login.php';</script>";
+    exit();
+}
+
+// Récupérer l'ID de l'utilisateur connecté depuis la session
+$userId = $_SESSION['userId'];
+
+// Récupérer les informations de l'étudiant depuis la base de données
+$userData = UserRepository::getUserById($userId);
+
+// Vérifier si l'utilisateur existe
+if (!$userData) {
+    echo "<script>alert('Utilisateur non trouvé.'); window.location.href = 'login.php';</script>";
+    exit();
+}
+
+// Instancier la classe Student avec les données de l'utilisateur
+$student = new Student(
+    $userData['id'],
+    $userData['nom'],
+    $userData['email'],
+    $userData['mot_de_passe'],
+    $userData['role_id'],
+    $userData['date_inscription'],
+    $userData['photo_profil'],
+    $userData['bio'],
+    $userData['pays'],
+    $userData['langue_id'],
+    $userData['statut_id']
+);
+
+// Récupérer toutes les langues disponibles via UserRepository
+$langues = UserRepository::getLangue($userId);
+
+// Gérer la soumission du formulaire pour mettre à jour le profil
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $updateData = [
+        'photo_profil' => trim($_POST['photo_profil']),
+        'bio' => trim($_POST['bio']),
+        'pays' => trim($_POST['pays']),
+        'langue_id' => (int) $_POST['langue_id']
+    ];
+
+    if ($student->updateProfile($updateData)) {
+        echo "<script>alert('Profil mis à jour avec succès.'); window.location.href = 'profile.php';</script>";
+    } else {
+        echo "<script>alert('Erreur lors de la mise à jour du profil.');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - Youdemy</title>
+    <title>Profil Étudiant - Youdemy</title>
     <!-- Lien vers Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Lien vers Font Awesome pour les icônes -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Lien vers le fichier CSS personnalisé -->
-    <link rel="stylesheet" href="styles.css">
+    <!-- Styles personnalisés -->
     <style>
-        /* Styles personnalisés */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #2F80ED, #F2994A);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
         }
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        .profile-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
         }
-        .profile-section {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+
+        .profile-container h2 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #2F80ED;
+            text-align: center;
         }
-        .profile-section h2 {
-            margin-bottom: 1.5rem;
-            color: #0d6efd;
-        }
-        .profile-info {
-            margin-bottom: 2rem;
-        }
-        .profile-info img {
+
+        .profile-picture {
             width: 150px;
             height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 1rem;
+            margin: 0 auto 20px;
+            display: block;
+            border: 3px solid #2F80ED;
         }
-        .profile-info h3 {
-            margin-bottom: 0.5rem;
-            color: #343a40;
+
+        .profile-info {
+            margin-bottom: 20px;
         }
+
         .profile-info p {
-            color: #6c757d;
+            margin: 10px 0;
+            font-size: 16px;
         }
-        .profile-details {
-            text-align: left;
-            margin-top: 1.5rem;
+
+        .btn-edit {
+            background: linear-gradient(135deg, #2F80ED, #F2994A);
+            border: none;
+            border-radius: 25px;
+            padding: 12px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
         }
-        .profile-details p {
-            margin-bottom: 0.5rem;
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(47, 128, 237, 0.4);
         }
-        .course-card, .certification-card {
-            background-color: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            transition: transform 0.3s ease;
+
+        .form-container {
+            display: none; /* Masquer le formulaire par défaut */
+            margin-top: 20px;
         }
-        .course-card:hover, .certification-card:hover {
-            transform: translateY(-5px);
-        }
-        .course-card h3, .certification-card h3 {
-            margin-bottom: 0.5rem;
-            color: #343a40;
-        }
-        .course-card p, .certification-card p {
-            color: #6c757d;
-        }
-        .badge {
-            font-size: 0.9rem;
-            padding: 0.5rem 0.75rem;
-        }
-        .badge-primary {
-            background-color: #0d6efd;
-        }
-        .badge-success {
-            background-color: #28a745;
-        }
-        footer {
-            background-color: #343a40;
-            color: #ffffff;
-            padding: 1.5rem 0;
-            margin-top: 2rem;
-        }
-        footer a {
-            color: #ffffff;
-            text-decoration: none;
-        }
-        footer a:hover {
-            color: #0d6efd;
+
+        .form-container.active {
+            display: block; /* Afficher le formulaire lorsqu'il est actif */
         }
     </style>
 </head>
 <body>
-    <!-- En-tête -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="home.php">Youdemy</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <div class="profile-container">
+        <h2>Profil Étudiant</h2>
+
+        <!-- Photo de profil -->
+        <img src="<?= htmlspecialchars($student->getProfile()['photo_profil']) ?>" alt="Photo de profil" class="profile-picture">
+
+        <!-- Informations du profil -->
+        <div class="profile-info">
+            <p><strong>Nom :</strong> <?= htmlspecialchars($student->getProfile()['nom']) ?></p>
+            <p><strong>Email :</strong> <?= htmlspecialchars($student->getProfile()['email']) ?></p>
+            <p><strong>Bio :</strong> <?= htmlspecialchars($student->getProfile()['bio']) ?></p>
+            <p><strong>Pays :</strong> <?= htmlspecialchars($student->getProfile()['pays']) ?></p>
+            <p><strong>Langue :</strong> <?= htmlspecialchars($student->getLangueUser()['nom']) ?> (<?= htmlspecialchars($student->getLangueUser()['code']) ?>)</p>
+        </div>
+
+        <!-- Bouton pour ouvrir le formulaire de modification -->
+        <button id="edit-profile-button" class="btn btn-edit">
+            <i class="fas fa-edit"></i> Modifier le Profil
+        </button>
+
+        <!-- Formulaire de modification du profil (caché par défaut) -->
+        <div id="form-container" class="form-container">
+            <form id="profile-form" method="POST">
+                <!-- Photo de profil (URL) -->
+                <div class="mb-3">
+                    <label for="photo_profil" class="form-label">Photo de profil (URL) :</label>
+                    <input type="text" id="photo_profil" name="photo_profil" class="form-control" value="<?= htmlspecialchars($student->getProfile()['photo_profil']) ?>">
+                </div>
+
+                <!-- Bio -->
+                <div class="mb-3">
+                    <label for="bio" class="form-label">Bio :</label>
+                    <textarea id="bio" name="bio" class="form-control" rows="4"><?= htmlspecialchars($student->getProfile()['bio']) ?></textarea>
+                </div>
+
+                <!-- Pays -->
+                <div class="mb-3">
+                    <label for="pays" class="form-label">Pays :</label>
+                    <input type="text" id="pays" name="pays" class="form-control" value="<?= htmlspecialchars($student->getProfile()['pays']) ?>">
+                </div>
+
+                <!-- Langue -->
+                <div class="mb-3">
+                    <label for="langue_id" class="form-label">Langue :</label>
+                    <select id="langue_id" name="langue_id" class="form-control">
+                        <?php foreach ($langues as $langue) : ?>
+                            <option value="<?= $langue['id'] ?>" <?= $langue['id'] == $student->getProfile()['langue_id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($langue['nom']) ?> (<?= htmlspecialchars($langue['code']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <button type="submit" class="btn btn-edit">
+                    <i class="fas fa-save"></i> Enregistrer les modifications
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="student.php">Tableau de bord</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="pageCourse.php">Cours</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="MyCourses.php">Mes cours</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="Cirtificat.php">Certifications</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="profile.php">Profil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-light" href="../front/logout.php">Déconnexion</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Section principale -->
-    <main class="profile-page">
-        <div class="container">
-            <!-- Titre de la page -->
-            <h1 class="my-5">Profil</h1>
-
-            <!-- Section : Informations du profil -->
-            <section class="profile-section">
-                <h2><i class="fas fa-user me-2"></i>Informations personnelles</h2>
-                <div class="profile-info text-center">
-                    <!-- Photo de profil -->
-                    <img src="https://via.placeholder.com/150" alt="Photo de profil">
-                    <!-- Nom -->
-                    <h3>Jean Dupont</h3>
-                    <!-- Email -->
-                    <p>jean.dupont@example.com</p>
-                </div>
-                <!-- Détails supplémentaires -->
-                <div class="profile-details">
-                    <p><strong>Date d'inscription :</strong> 15/10/2023</p>
-                    <p><strong>Bio :</strong> Développeur passionné par les nouvelles technologies et les langages de programmation modernes.</p>
-                    <p><strong>Pays :</strong> France</p>
-                    <p><strong>Langue :</strong> Français</p>
-                </div>
-                <!-- Bouton pour modifier le profil -->
-                <div class="text-center mt-4">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-edit me-2"></i>Modifier le profil
-                    </button>
-                </div>
-            </section>
-
-          
+            </form>
         </div>
-    </main>
-
-    <!-- Pied de page -->
-    <footer>
-        <div class="container text-center">
-            <p>&copy; 2024 Youdemy. Tous droits réservés.</p>
-            <p>
-                <a href="#">Politique de confidentialité</a> |
-                <a href="#">Conditions d'utilisation</a>
-            </p>
-        </div>
-    </footer>
+    </div>
 
     <!-- Lien vers Bootstrap JS et dépendances -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Script pour gérer l'affichage/masquage du formulaire -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editButton = document.getElementById("edit-profile-button");
+            const formContainer = document.getElementById("form-container");
+
+            if (editButton && formContainer) {
+                editButton.addEventListener("click", function () {
+                    formContainer.classList.toggle("active");
+                });
+            }
+        });
+    </script>
 </body>
 </html>
