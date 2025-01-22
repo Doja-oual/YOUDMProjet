@@ -12,7 +12,7 @@ class InscriptionRepository{
 
  //ajoute inscription
 
- public static function addInscription(){
+ public static function addInscription($studentId, $courseId){
     $conn = self::getConnection();
     $sql= "INSERT INTO Inscription(etudiant_id,cours_id) VALUE (:etudiant_id ,:cours_id)";
     try{

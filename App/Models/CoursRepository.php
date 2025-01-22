@@ -475,4 +475,18 @@ public static function countAllCourses() {
     $stmt->execute();
     return (int) $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
 }
+// course active 
+public static function getActiveCourses() {
+    $conn = self::getConnection();
+    $sql = "SELECT * FROM Cours WHERE statut_id = :statut_id"; 
+    $stmt = $conn->prepare($sql);
+    
+    try {
+        $stmt->execute(['statut_id' => 1]); 
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la récupération des cours actifs : " . $e->getMessage());
+        return false;
+    }
+}
 }

@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $password = $_POST['mot_de_passe'];
         $role = $_POST['role'];
-        UserRepository::register($username, $email, $password, $role);
+        $statu = $_POST['statut'];
+        UserRepository::register($username, $email, $password, $role,$statu);
     }
 
     if (isset($_POST['login'])) {
@@ -134,6 +135,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input class="form-check-input" name="role" type="radio" id="register-role-enseignant" value="<?= User::ROLE_ENSEIGNANT ?>" required>
                         <label class="form-check-label" for="register-role-enseignant">Enseignant</label>
                     </div>
+                    <div class="mb-3">
+
+                    <label for="statut_id" class="form-label">Statut :</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+                        <select id="statut_id" name="statut" class="form-control" required>
+                            <option value="<? User::STATUS_INACTIVE ?>">En attente</option>
+                        </select>
+                        </div>
                 </div>
                 <button type="submit" name="register" class="btn btn-primary">S'inscrire</button>
                 <div class="text-center mt-3">

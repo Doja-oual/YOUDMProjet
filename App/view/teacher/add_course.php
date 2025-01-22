@@ -354,7 +354,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
                         <select id="statut_id" name="statut_id" class="form-control" required>
-                            <option value="1">Actif</option>
                             <option value="2">En attente</option>
                         </select>
                     </div>

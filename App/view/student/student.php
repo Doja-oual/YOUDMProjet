@@ -64,6 +64,9 @@ $certificates = $student->getMyCertificats($student->getId());
                             <a class="nav-link" href="#">Tableau de bord</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="pageCourse.php">Cours</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#">Mes cours</a>
                         </li>
                         <li class="nav-item">

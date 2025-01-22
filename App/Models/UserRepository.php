@@ -10,10 +10,10 @@ class UserRepository {
     }
 
     // Enregistrer un nouvel utilisateur
-    public static function register($username, $email, $password, $role_id = User::ROLE_ETUDIANT) {
+    public static function register($username, $email, $password, $role_id = User::ROLE_ETUDIANT ,$status_id =User::STATUS_INACTIVE) {
         $conn = self::getConnection();
-        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id) 
-                VALUES (:nom, :email, :mot_de_passe, :role_id)";
+        $sql = "INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id,statut_id) 
+                VALUES (:nom, :email, :mot_de_passe, :role_id,:statut_id)";
         
         try {
             $stmt = $conn->prepare($sql);
@@ -22,6 +22,8 @@ class UserRepository {
                 'email' => $email,
                 'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT),
                 'role_id' => $role_id,
+                'statut_id'=> $status_id,
+
             ]);
         } catch (PDOException $e) {
             error_log("Erreur lors de l'enregistrement de l'utilisateur : " . $e->getMessage());
@@ -364,27 +366,33 @@ class UserRepository {
         }
     }
 //Active un utilisateur (valide un compte enseignant).
-    public static function activateUser($userId) {
-        $conn = self::getConnection();
-        $sql = "UPDATE Utilisateur SET statut_id = :statut_id WHERE id = :id";
-        $stmt = $conn->prepare($sql);
+public static function activateUser($userId) {
+    $conn = self::getConnection();
+    $sql = "UPDATE Utilisateur SET statut_id = :statut_id WHERE id = :id";
     
-        try {
-            return $stmt->execute(['statut_id' => User::STATUS_ACTIVE, 'id' => $userId]);
-        } catch (PDOException $e) {
-            error_log("Erreur lors de l'activation de l'utilisateur : " . $e->getMessage());
-            return false;
-        }
+    try {
+        $stmt = $conn->prepare($sql);
+        return $stmt->execute([
+            'statut_id' => 1, 
+            'id' => $userId
+        ]);
+    } catch (PDOException $e) {
+        error_log("Erreur lors de l'activation de l'utilisateur : " . $e->getMessage());
+        return false;
     }
+}
     // Suspend un utilisateur
     
     public static function suspendUser($userId) {
         $conn = self::getConnection();
         $sql = "UPDATE Utilisateur SET statut_id = :statut_id WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-    
+        
         try {
-            return $stmt->execute(['statut_id' => User::STATUS_SUSPENDED, 'id' => $userId]);
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([
+                'statut_id' => 4, 
+                'id' => $userId
+            ]);
         } catch (PDOException $e) {
             error_log("Erreur lors de la suspension de l'utilisateur : " . $e->getMessage());
             return false;
@@ -404,6 +412,19 @@ class UserRepository {
             return false;
         }
     }
+    // recupere les user by statu 
+    public static function getUsersByStatus($statutId) {
+        $conn = self::getConnection();
+        $sql = "SELECT * FROM Utilisateur WHERE statut_id = :statut_id";
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['statut_id' => $statutId]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des utilisateurs par statut : " . $e->getMessage());
+            return false;
+        }}
     //REcupere les meilleurs enseignants.
     public static function getTopTeachers($limit) {
         $conn = self::getConnection();
@@ -441,5 +462,22 @@ class UserRepository {
             return false;
         }
 
+}
+// verifiie deja incrite au nn
+public static function isStudentEnrolled($studentId, $courseId) {
+    $conn = self::getConnection();
+    $sql = "SELECT * FROM Inscription WHERE etudiant_id = :etudiant_id AND cours_id = :cours_id";
+    
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            'etudiant_id' => $studentId,
+            'cours_id' => $courseId,
+        ]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la vérification de l'inscription : " . $e->getMessage());
+        return false;
+    }
 }
 }
